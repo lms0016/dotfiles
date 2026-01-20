@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Symlink management script
+# Configuration file installation script
 
 set -e
 
@@ -14,13 +14,13 @@ source "$DOTFILES_DIR/lib/utils.sh"
 BACKUP_DIR="$HOME/.dotfiles_backup/$(date +%Y%m%d_%H%M%S)"
 
 # ============================================================================
-# Symlink definitions
+# Config installation functions
 # ============================================================================
 
-# Shell symlinks
+# Shell configs
 setup_shell_bash() {
     info "Setting up Bash configuration..."
-    create_symlink "$DOTFILES_DIR/config/shell/bash/.bashrc" "$HOME/.bashrc"
+    copy_config "$DOTFILES_DIR/config/shell/bash/.bashrc" "$HOME/.bashrc"
 }
 
 setup_shell_zsh() {
@@ -32,7 +32,7 @@ setup_shell_zsh() {
         return 1
     fi
 
-    create_symlink "$DOTFILES_DIR/config/shell/zsh/.zshrc" "$HOME/.zshrc"
+    copy_config "$DOTFILES_DIR/config/shell/zsh/.zshrc" "$HOME/.zshrc"
 
     # Set zsh as default shell if not already
     if [ "$SHELL" != "$(which zsh)" ]; then
@@ -41,41 +41,43 @@ setup_shell_zsh() {
     fi
 }
 
-# Git symlinks
+# Git configs
 setup_git() {
     info "Setting up Git configuration..."
-    create_symlink "$DOTFILES_DIR/config/git/.gitconfig" "$HOME/.gitconfig"
+    copy_config "$DOTFILES_DIR/config/git/.gitconfig" "$HOME/.gitconfig"
 
     if [ -f "$DOTFILES_DIR/config/git/.gitignore_global" ]; then
-        create_symlink "$DOTFILES_DIR/config/git/.gitignore_global" "$HOME/.gitignore_global"
+        copy_config "$DOTFILES_DIR/config/git/.gitignore_global" "$HOME/.gitignore_global"
     fi
 }
 
-# Vim symlinks
+# Vim configs
 setup_vim() {
     info "Setting up Vim configuration..."
 
     if [ -f "$DOTFILES_DIR/config/vim/.vimrc" ]; then
-        create_symlink "$DOTFILES_DIR/config/vim/.vimrc" "$HOME/.vimrc"
+        copy_config "$DOTFILES_DIR/config/vim/.vimrc" "$HOME/.vimrc"
     fi
 
     if [ -d "$DOTFILES_DIR/config/vim/.vim" ]; then
-        create_symlink "$DOTFILES_DIR/config/vim/.vim" "$HOME/.vim"
+        cp -r "$DOTFILES_DIR/config/vim/.vim" "$HOME/.vim"
+        success "Copied .vim directory"
     fi
 
     # Neovim support
     if [ -d "$DOTFILES_DIR/config/vim/nvim" ]; then
         mkdir -p "$HOME/.config"
-        create_symlink "$DOTFILES_DIR/config/vim/nvim" "$HOME/.config/nvim"
+        cp -r "$DOTFILES_DIR/config/vim/nvim" "$HOME/.config/nvim"
+        success "Copied nvim config"
     fi
 }
 
-# Tmux symlinks
+# Tmux configs
 setup_tmux() {
     info "Setting up Tmux configuration..."
 
     if [ -f "$DOTFILES_DIR/config/tmux/.tmux.conf" ]; then
-        create_symlink "$DOTFILES_DIR/config/tmux/.tmux.conf" "$HOME/.tmux.conf"
+        copy_config "$DOTFILES_DIR/config/tmux/.tmux.conf" "$HOME/.tmux.conf"
     fi
 }
 
@@ -109,10 +111,10 @@ backup_all() {
 # ============================================================================
 # Clean function
 # ============================================================================
-clean_symlinks() {
-    info "Removing dotfiles symlinks..."
+clean_configs() {
+    info "Removing dotfiles configurations..."
 
-    local symlinks=(
+    local configs=(
         "$HOME/.bashrc"
         "$HOME/.zshrc"
         "$HOME/.p10k.zsh"
@@ -124,26 +126,31 @@ clean_symlinks() {
         "$HOME/.tmux.conf"
     )
 
-    for link in "${symlinks[@]}"; do
-        if [ -L "$link" ]; then
-            rm "$link"
-            success "Removed $link"
+    for config in "${configs[@]}"; do
+        if [ -e "$config" ] || [ -L "$config" ]; then
+            rm -rf "$config"
+            success "Removed $config"
         fi
     done
 
     success "Cleanup complete"
 }
 
+# Alias for backward compatibility
+clean_symlinks() {
+    clean_configs
+}
+
 # ============================================================================
 # Setup all
 # ============================================================================
 setup_all() {
-    info "Setting up all symlinks..."
+    info "Setting up all configurations..."
     setup_shell_bash
     setup_git
     setup_vim
     setup_tmux
-    success "All symlinks created"
+    success "All configurations installed"
 }
 
 # ============================================================================
@@ -173,7 +180,7 @@ main() {
             backup_all
             ;;
         --clean)
-            clean_symlinks
+            clean_configs
             ;;
         *)
             echo "Usage: $0 [--shell bash|zsh] [--module git|vim|tmux] [--all] [--backup] [--clean]"

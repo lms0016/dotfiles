@@ -91,8 +91,8 @@ install_plugins() {
     done
 }
 
-setup_symlinks() {
-    info "Setting up Oh My Zsh configuration symlinks..."
+setup_configs() {
+    info "Setting up Oh My Zsh configuration files..."
 
     # Backup existing .zshrc if it's not a symlink
     if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
@@ -106,11 +106,11 @@ setup_symlinks() {
         rm -f "$HOME/.zshrc"
     fi
 
-    # Create symlinks
-    create_symlink "$DOTFILES_DIR/config/shell/zsh/.zshrc.omz" "$HOME/.zshrc"
-    create_symlink "$DOTFILES_DIR/config/shell/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
+    # Copy config files
+    copy_config "$DOTFILES_DIR/config/shell/zsh/.zshrc.omz" "$HOME/.zshrc"
+    copy_config "$DOTFILES_DIR/config/shell/zsh/.p10k.zsh" "$HOME/.p10k.zsh"
 
-    success "Symlinks created"
+    success "Configuration files installed"
 }
 
 set_default_shell() {
@@ -147,7 +147,7 @@ main() {
     install_oh_my_zsh
     install_powerlevel10k
     install_plugins
-    setup_symlinks
+    setup_configs
     set_default_shell
 
     echo ""

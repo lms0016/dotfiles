@@ -100,7 +100,7 @@ backup_file() {
     fi
 }
 
-create_symlink() {
+copy_config() {
     local source="$1"
     local target="$2"
 
@@ -111,8 +111,13 @@ create_symlink() {
     fi
 
     mkdir -p "$(dirname "$target")"
-    ln -s "$source" "$target"
-    success "Linked $target -> $source"
+    cp "$source" "$target"
+    success "Copied $source -> $target"
+}
+
+# Alias for backward compatibility
+create_symlink() {
+    copy_config "$@"
 }
 
 # ============================================================================
