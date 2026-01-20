@@ -28,6 +28,7 @@ help:
 	@echo "Main targets:"
 	@echo "  install      - Full installation (all modules)"
 	@echo "  tester       - Test machine setup (install without ai-agents, oh-my-zsh)"
+	@echo "  ci-test      - CI test (non-interactive, for GitHub Actions)"
 	@echo ""
 	@echo "Individual targets:"
 	@echo "  packages     - Install system packages only"
@@ -65,6 +66,13 @@ tester: packages configs ssh-server firewall tmux uv nvm ssh
 	@echo ""
 	@echo "✓ Test machine setup complete!"
 	@echo "  Please restart your shell or run: source ~/.bashrc (or ~/.zshrc)"
+
+# CI test: non-interactive targets only (for GitHub Actions)
+# Excludes: ssh (interactive), ai-agents (requires npm login), oh-my-zsh (changes shell)
+.PHONY: ci-test
+ci-test: packages configs tmux uv nvm
+	@echo ""
+	@echo "✓ CI test complete!"
 
 # ============================================================================
 # Package Installation

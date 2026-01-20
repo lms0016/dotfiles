@@ -76,6 +76,14 @@ is_root() {
     [ "$EUID" -eq 0 ]
 }
 
+# SUDO command: empty if already root, otherwise "sudo"
+# Usage: $SUDO apt-get install ...
+if is_root; then
+    SUDO=""
+else
+    SUDO="sudo"
+fi
+
 require_sudo() {
     if ! is_root; then
         if ! is_command_exists sudo; then

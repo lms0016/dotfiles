@@ -35,7 +35,7 @@ install_apt_packages() {
     fi
 
     info "Updating apt cache..."
-    sudo apt-get update
+    $SUDO apt-get update
 
     info "Installing apt packages..."
 
@@ -56,7 +56,7 @@ install_apt_packages() {
             success "$package (already installed)"
         else
             info "Installing $package..."
-            sudo apt-get install -y "$package" && \
+            $SUDO apt-get install -y "$package" && \
                 success "$package" || \
                 warning "Failed to install $package"
         fi
@@ -98,7 +98,7 @@ install_snap_packages() {
             success "$package (already installed)"
         else
             info "Installing $package..."
-            sudo snap install $package $flags && \
+            $SUDO snap install $package $flags && \
                 success "$package" || \
                 warning "Failed to install $package"
         fi

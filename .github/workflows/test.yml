@@ -1,0 +1,62 @@
+name: Test Dotfiles Installation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  test-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show system info
+        run: |
+          echo "macOS version:"
+          sw_vers
+          echo ""
+          echo "Homebrew version:"
+          brew --version
+
+      - name: Run CI test
+        run: make ci-test
+
+      - name: Verify installations
+        run: |
+          echo "=== Checking installed tools ==="
+          echo "tmux: $(tmux -V 2>/dev/null || echo 'not found')"
+          echo "uv: $(uv --version 2>/dev/null || echo 'not found')"
+          echo "nvm: $([ -f ~/.nvm/nvm.sh ] && echo 'installed' || echo 'not found')"
+          echo ""
+          echo "=== Checking config files ==="
+          ls -la ~/.bashrc ~/.bash_profile ~/.vimrc ~/.tmux.conf 2>/dev/null || true
+
+  test-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show system info
+        run: |
+          echo "Ubuntu version:"
+          lsb_release -a
+          echo ""
+          uname -a
+
+      - name: Run CI test
+        run: make ci-test
+
+      - name: Verify installations
+        run: |
+          echo "=== Checking installed tools ==="
+          echo "tmux: $(tmux -V 2>/dev/null || echo 'not found')"
+          echo "uv: $(uv --version 2>/dev/null || echo 'not found')"
+          echo "nvm: $([ -f ~/.nvm/nvm.sh ] && echo 'installed' || echo 'not found')"
+          echo ""
+          echo "=== Checking config files ==="
+          ls -la ~/.bashrc ~/.vimrc ~/.tmux.conf 2>/dev/null || true
