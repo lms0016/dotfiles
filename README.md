@@ -86,6 +86,7 @@ dotfiles/
 
 **macOS:**
 - `packages/macos/brew.txt` - Homebrew 套件
+- `packages/macos/cask.txt` - Homebrew Cask 應用程式
 
 ### 新增 Shell Aliases
 
