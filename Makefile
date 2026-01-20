@@ -35,6 +35,7 @@ help:
 	@echo "  shell-zsh    - Setup zsh configuration"
 	@echo "  shell-bash   - Setup bash configuration"
 	@echo "  git          - Setup git configuration"
+	@echo "  ssh          - Setup SSH multi-account (interactive)"
 	@echo "  vim          - Setup vim configuration"
 	@echo "  tmux         - Setup tmux + TPM (Tmux Plugin Manager)"
 	@echo "  uv           - Install uv (Python package manager)"
@@ -117,6 +118,10 @@ shell-bash:
 git:
 	@bash scripts/common/symlinks.sh --module git
 
+.PHONY: ssh
+ssh:
+	@bash scripts/common/ssh.sh
+
 .PHONY: vim
 vim:
 	@bash scripts/common/symlinks.sh --module vim
@@ -165,6 +170,7 @@ list:
 	@echo "Available modules:"
 	@echo "  - shell (bash/zsh)"
 	@echo "  - git"
+	@echo "  - ssh"
 	@echo "  - vim"
 	@echo "  - tmux"
 	@echo "  - uv"

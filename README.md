@@ -37,6 +37,7 @@ make packages      # 只安裝軟體套件
 make shell-zsh     # 設定 zsh
 make shell-bash    # 設定 bash
 make git           # 設定 git
+make ssh           # 設定 SSH 多帳號（互動式）
 make vim           # 設定 vim
 make tmux          # 設定 tmux + TPM (插件管理器)
 make uv            # 安裝 uv (Python 套件管理器)
@@ -61,6 +62,7 @@ dotfiles/
 │   │   ├── bash/         # Bash 設定
 │   │   └── zsh/          # Zsh 設定
 │   ├── git/              # Git 設定
+│   ├── ssh/              # SSH 設定模板
 │   ├── vim/              # Vim 設定
 │   └── tmux/             # Tmux 設定
 ├── scripts/              # 安裝腳本
@@ -95,6 +97,51 @@ dotfiles/
 ### 機器專屬設定
 
 建立 `~/.bashrc.local` 或 `~/.zshrc.local`，這些檔案不會被 git 追蹤。
+
+## SSH 多帳號設定
+
+支援 GitHub 多帳號自動切換（個人 + 工作帳號）。
+
+### 設定流程
+
+```bash
+# 1. 複製 SSH key 到 ~/.ssh/（從備份）
+cp /path/to/backup/id_ed25519_work ~/.ssh/
+cp /path/to/backup/id_ed25519_work.pub ~/.ssh/
+chmod 600 ~/.ssh/id_ed25519_work
+
+# 2. 執行互動式設定
+make ssh
+```
+
+### 互動式設定會做的事
+
+1. **設定 Global Git Config** - 確認或設定個人帳號的 name/email
+2. **建立 SSH Config** - 設定多個 GitHub host（使用不同 key）
+3. **Git URL Rewrite** - 自動將組織 repo 導向對應的 SSH host
+4. **Git includeIf** - 依專案目錄自動切換 Git 身份
+
+### 設定完成後的結構
+
+```
+~/.ssh/config          # SSH 多 host 設定
+~/.gitconfig           # 包含 URL rewrite 和 includeIf
+~/.gitconfig-work      # 工作帳號的 user.name/email
+```
+
+### 範例：設定後的效果
+
+```bash
+# 個人專案（~/Projects/Personal/）
+git config user.email  # → lms001616@gmail.com
+
+# 工作專案（~/Projects/Work/）
+git config user.email  # → alan@company.com
+
+# Clone 組織 repo 時自動使用對應的 SSH key
+git clone git@github.com:MyCompany/repo.git
+# 自動轉換為 → git@github-work:MyCompany/repo.git
+```
 
 ## 支援的作業系統
 

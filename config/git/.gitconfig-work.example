@@ -1,0 +1,20 @@
+# Git configuration for work projects
+# This file is included via includeIf in ~/.gitconfig
+#
+# Example ~/.gitconfig setup:
+#   [includeIf "gitdir:~/Projects/Work/"]
+#       path = ~/.gitconfig-work
+#
+# Copy this file to ~/.gitconfig-work and customize
+
+[user]
+    name = Your Name
+    email = your.name@company.com
+
+# Optional: Work-specific signing key
+# [user]
+#     signingkey = ABCD1234
+
+# Optional: Work-specific commit settings
+# [commit]
+#     gpgsign = true

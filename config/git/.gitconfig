@@ -37,5 +37,38 @@
     conflictstyle = diff3
 
 # ============================================================================
+# Multi-Account Setup (SSH + Directory-based Identity)
+# ============================================================================
+# This section enables automatic identity switching based on project directory.
+# Combined with SSH config, you can use different GitHub accounts seamlessly.
+
+# URL Rewrite: Automatically use different SSH host for specific organizations
+# This rewrites git@github.com:YourOrg/ to git@github-work:YourOrg/
+# so that the correct SSH key is used (as defined in ~/.ssh/config)
+#
+# [url "git@github-work:YourOrganization/"]
+#     insteadOf = git@github.com:YourOrganization/
+
+# Directory-based Identity: Use different git user based on project location
+# Create separate config files (e.g., ~/.gitconfig-work) with [user] section
+#
+# [includeIf "gitdir:~/Projects/Work/"]
+#     path = ~/.gitconfig-work
+#
+# [includeIf "gitdir:~/Projects/Personal/"]
+#     path = ~/.gitconfig-personal
+
+# ============================================================================
+# Credential Helper (platform-specific)
+# ============================================================================
+# macOS: Use Keychain
+# [credential]
+#     helper = osxkeychain
+
+# Linux: Use libsecret or cache
+# [credential]
+#     helper = cache --timeout=3600
+
+# ============================================================================
 # Add your custom git settings below
 # ============================================================================

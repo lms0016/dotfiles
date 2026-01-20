@@ -1,0 +1,68 @@
+# SSH Configuration Template
+# Copy this file to ~/.ssh/config and customize as needed
+#
+# Documentation: man ssh_config
+
+# ============================================================================
+# Global Defaults
+# ============================================================================
+Host *
+    # macOS: Use Keychain to store passphrase
+    UseKeychain yes
+    AddKeysToAgent yes
+
+    # Only use explicitly specified identity files
+    IdentitiesOnly yes
+
+    # Keep connection alive
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+
+# ============================================================================
+# GitHub Multi-Account Setup
+# ============================================================================
+# This setup allows you to use different SSH keys for different GitHub accounts
+# or organizations. Combined with git's includeIf and url rewrite, you can
+# automatically use the correct identity based on the repository.
+
+# Personal GitHub account
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+
+# Work/Organization GitHub account (example)
+# Usage: git clone git@github-work:organization/repo.git
+# Or use URL rewrite in .gitconfig to make it automatic
+Host github-work
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_work
+
+# ============================================================================
+# Common Server Templates
+# ============================================================================
+
+# Example: Development server
+# Host dev
+#     HostName dev.example.com
+#     User developer
+#     IdentityFile ~/.ssh/id_ed25519
+#     Port 22
+
+# Example: Jump host / Bastion
+# Host bastion
+#     HostName bastion.example.com
+#     User admin
+#     IdentityFile ~/.ssh/id_ed25519
+
+# Host internal-server
+#     HostName 10.0.0.100
+#     User admin
+#     ProxyJump bastion
+
+# ============================================================================
+# Local/Private Servers (machine-specific, don't commit)
+# ============================================================================
+# Add your local servers in ~/.ssh/config.local and include it:
+# Include ~/.ssh/config.local
