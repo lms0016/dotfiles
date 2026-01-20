@@ -38,8 +38,12 @@ make shell-zsh     # 設定 zsh
 make shell-bash    # 設定 bash
 make git           # 設定 git
 make vim           # 設定 vim
+make uv            # 安裝 uv (Python 套件管理器)
+make nvm           # 安裝 nvm 和 Node.js
+make symlinks      # 建立所有 symlinks
 make backup        # 備份現有設定
 make clean         # 移除 symlinks
+make list          # 列出可用模組
 ```
 
 ## 目錄結構
@@ -56,10 +60,12 @@ dotfiles/
 │   ├── git/              # Git 設定
 │   └── vim/              # Vim 設定
 ├── scripts/              # 安裝腳本
-│   ├── common/           # 跨平台腳本
-│   └── linux/            # Linux 專用
+│   ├── common/           # 跨平台腳本 (symlinks, uv, nvm)
+│   ├── linux/            # Linux 專用
+│   └── macos/            # macOS 專用
 ├── packages/             # 軟體清單
-│   └── linux/            # Linux 套件
+│   ├── linux/            # Linux 套件 (apt, snap, flatpak)
+│   └── macos/            # macOS 套件 (brew)
 └── lib/                  # 共用函數庫
 ```
 
@@ -67,7 +73,15 @@ dotfiles/
 
 ### 新增軟體套件
 
-編輯 `packages/linux/apt.txt`，一行一個套件名稱。
+依照作業系統編輯對應的套件清單，一行一個套件名稱：
+
+**Linux:**
+- `packages/linux/apt.txt` - APT 套件
+- `packages/linux/snap.txt` - Snap 套件
+- `packages/linux/flatpak.txt` - Flatpak 套件
+
+**macOS:**
+- `packages/macos/brew.txt` - Homebrew 套件
 
 ### 新增 Shell Aliases
 
@@ -80,5 +94,5 @@ dotfiles/
 ## 支援的作業系統
 
 - [x] Ubuntu / Debian
-- [ ] macOS（規劃中）
+- [x] macOS (Homebrew)
 - [ ] Windows（規劃中）

@@ -16,6 +16,7 @@ Reference guide for where to place files and how to extend this dotfiles reposit
 | Add apt package | `packages/linux/apt.txt` |
 | Add snap package | `packages/linux/snap.txt` |
 | Add flatpak package | `packages/linux/flatpak.txt` |
+| Add brew package (macOS) | `packages/macos/brew.txt` |
 | Add shell alias | `config/shell/common/aliases.sh` |
 | Add shell function | `config/shell/common/functions.sh` |
 | Add bash-only config | `config/shell/bash/.bashrc` |
@@ -26,6 +27,8 @@ Reference guide for where to place files and how to extend this dotfiles reposit
 | Add Linux script | `scripts/linux/` |
 | Add macOS script | `scripts/macos/` |
 | Add cross-platform script | `scripts/common/` |
+| Install Python (uv) | `make uv` |
+| Install Node.js (nvm) | `make nvm` |
 
 ## Directory Structure
 
@@ -41,9 +44,9 @@ dotfiles/
 │   └── <app>/        # Other app configs
 │
 ├── scripts/          # Installation scripts
-│   ├── common/       # Cross-platform scripts
+│   ├── common/       # Cross-platform (symlinks, uv, nvm)
 │   ├── linux/        # Linux-only scripts
-│   ├── macos/        # [Future] macOS scripts
+│   ├── macos/        # macOS scripts
 │   └── windows/      # [Future] Windows scripts
 │
 ├── packages/         # Package lists (one per line)
@@ -51,7 +54,8 @@ dotfiles/
 │   │   ├── apt.txt
 │   │   ├── snap.txt
 │   │   └── flatpak.txt
-│   ├── macos/        # [Future] brew.txt
+│   ├── macos/
+│   │   └── brew.txt
 │   └── windows/      # [Future] winget.txt
 │
 └── lib/              # Shared shell functions
@@ -90,6 +94,36 @@ slack
 com.spotify.Client
 org.gimp.GIMP
 ```
+
+### Homebrew Packages (`packages/macos/brew.txt`)
+
+```bash
+# Comments start with #
+git
+curl
+wget
+
+# Use [full] tag for packages only on dev machines
+node [full]
+```
+
+## Installing Development Tools
+
+### Python (uv)
+
+```bash
+make uv
+```
+
+Installs [uv](https://github.com/astral-sh/uv) - fast Python package manager. After installation, use `uv` to manage Python versions and packages.
+
+### Node.js (nvm)
+
+```bash
+make nvm
+```
+
+Installs [nvm](https://github.com/nvm-sh/nvm) and the latest LTS Node.js. After installation, use `nvm` to manage Node.js versions.
 
 ## Adding Shell Configuration
 
@@ -133,10 +167,10 @@ mkdir -p config/tmux
 ```makefile
 .PHONY: tmux
 tmux:
-	@bash scripts/common/symlinks.sh --module tmux
+    @bash scripts/common/symlinks.sh --module tmux
 ```
 
-2. Update `scripts/common/symlinks.sh` to handle the module
+1. Update `scripts/common/symlinks.sh` to handle the module
 
 ## Machine-Specific Config
 
@@ -164,6 +198,16 @@ These are sourced automatically but not tracked in git.
 ### "I want to add vim/neovim config"
 
 1. Create `config/vim/`
-2. Add `.vimrc` or `init.vim`
-3. Update symlinks script
-4. Add `make vim` target to Makefile
+1. Add `.vimrc` or `init.vim`
+1. Update symlinks script
+1. Add `make vim` target to Makefile
+1. Update `README.md` (可用指令、目錄結構)
+
+## Important Reminder
+
+**新增功能或模組後，務必更新 `README.md`：**
+
+- 新增 make target → 更新「可用指令」section
+- 新增目錄或檔案 → 更新「目錄結構」section
+- 新增套件管理器 → 更新「自訂設定」section
+- 新增 OS 支援 → 更新「支援的作業系統」section
