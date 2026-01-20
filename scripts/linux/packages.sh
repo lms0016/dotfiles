@@ -56,7 +56,7 @@ install_apt_packages() {
             success "$package (already installed)"
         else
             info "Installing $package..."
-            $SUDO apt-get install -y "$package" && \
+            $SUDO apt-get install -y "$package" < /dev/null && \
                 success "$package" || \
                 warning "Failed to install $package"
         fi
@@ -98,7 +98,7 @@ install_snap_packages() {
             success "$package (already installed)"
         else
             info "Installing $package..."
-            $SUDO snap install $package $flags && \
+            $SUDO snap install $package $flags < /dev/null && \
                 success "$package" || \
                 warning "Failed to install $package"
         fi
@@ -132,7 +132,7 @@ install_flatpak_packages() {
             success "$package (already installed)"
         else
             info "Installing $package..."
-            flatpak install -y flathub "$package" && \
+            flatpak install -y flathub "$package" < /dev/null && \
                 success "$package" || \
                 warning "Failed to install $package"
         fi

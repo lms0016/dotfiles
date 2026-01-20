@@ -82,7 +82,7 @@ install_brew_packages() {
             success "$package (already installed)"
         else
             info "Installing $package..."
-            brew install "$package" && \
+            brew install "$package" < /dev/null && \
                 success "$package" || \
                 warning "Failed to install $package"
         fi
@@ -111,7 +111,7 @@ install_cask_packages() {
             success "$package (already installed)"
         else
             info "Installing $package..."
-            brew install --cask "$package" && \
+            brew install --cask "$package" < /dev/null && \
                 success "$package" || \
                 warning "Failed to install $package"
         fi
