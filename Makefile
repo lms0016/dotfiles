@@ -108,7 +108,7 @@ endif
 # Shell Configuration
 # ============================================================================
 .PHONY: shell-zsh
-shell-zsh:
+shell-zsh: packages
 	@bash scripts/common/symlinks.sh --shell zsh
 
 .PHONY: shell-bash
@@ -131,7 +131,7 @@ vim:
 	@bash scripts/common/symlinks.sh --module vim
 
 .PHONY: tmux
-tmux:
+tmux: packages
 	@bash scripts/common/tmux.sh
 
 .PHONY: uv
@@ -143,11 +143,11 @@ nvm:
 	@bash scripts/common/nvm.sh
 
 .PHONY: ai-agents
-ai-agents:
+ai-agents: nvm
 	@bash scripts/common/ai-agents.sh
 
 .PHONY: oh-my-zsh
-oh-my-zsh:
+oh-my-zsh: packages
 	@bash scripts/common/oh-my-zsh.sh
 
 .PHONY: configs
