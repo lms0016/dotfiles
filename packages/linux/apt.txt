@@ -1,0 +1,34 @@
+# APT packages for Ubuntu/Debian
+# Lines starting with # are comments
+# Add [full] tag to packages that should be skipped in minimal mode
+
+# ============================================================================
+# Essential tools (installed in both minimal and full mode)
+# ============================================================================
+git
+curl
+wget
+vim
+htop
+tmux
+tree
+unzip
+jq
+
+# Shell
+zsh
+
+# Build tools
+build-essential
+make
+
+# ============================================================================
+# Development tools [full] - skipped in minimal mode
+# ============================================================================
+# nodejs [full]
+# python3-pip [full]
+# docker.io [full]
+
+# ============================================================================
+# Add your packages below
+# ============================================================================

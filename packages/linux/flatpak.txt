@@ -1,0 +1,8 @@
+# Flatpak packages
+# Use the full application ID from Flathub
+
+# ============================================================================
+# Add your flatpak packages below
+# ============================================================================
+# com.spotify.Client
+# org.gimp.GIMP

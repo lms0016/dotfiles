@@ -1,0 +1,41 @@
+[user]
+    # TODO: Update with your name and email
+    name = Your Name
+    email = your.email@example.com
+
+[core]
+    editor = vim
+    autocrlf = input
+    excludesfile = ~/.gitignore_global
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[push]
+    default = current
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    lg = log --oneline --graph --decorate --all
+    last = log -1 HEAD
+    unstage = reset HEAD --
+    amend = commit --amend --no-edit
+
+[color]
+    ui = auto
+
+[diff]
+    colorMoved = default
+
+[merge]
+    conflictstyle = diff3
+
+# ============================================================================
+# Add your custom git settings below
+# ============================================================================

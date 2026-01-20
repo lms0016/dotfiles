@@ -1,0 +1,10 @@
+# Local configuration files (machine-specific)
+*.local
+
+# Backup files
+*.bak
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

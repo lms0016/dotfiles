@@ -1,0 +1,10 @@
+# Snap packages
+# Format: package-name [flags]
+# Example: code --classic
+
+# ============================================================================
+# Add your snap packages below
+# ============================================================================
+# code --classic
+# spotify
+# slack
