@@ -36,6 +36,7 @@ help:
 	@echo "  shell-bash   - Setup bash configuration"
 	@echo "  git          - Setup git configuration"
 	@echo "  vim          - Setup vim configuration"
+	@echo "  tmux         - Setup tmux + TPM (Tmux Plugin Manager)"
 	@echo "  uv           - Install uv (Python package manager)"
 	@echo "  nvm          - Install nvm and Node.js"
 	@echo "  ai-agents    - Install AI CLI tools (Copilot, Codex, Gemini, Claude)"
@@ -120,6 +121,10 @@ git:
 vim:
 	@bash scripts/common/symlinks.sh --module vim
 
+.PHONY: tmux
+tmux:
+	@bash scripts/common/tmux.sh
+
 .PHONY: uv
 uv:
 	@bash scripts/common/uv.sh
@@ -161,6 +166,7 @@ list:
 	@echo "  - shell (bash/zsh)"
 	@echo "  - git"
 	@echo "  - vim"
+	@echo "  - tmux"
 	@echo "  - uv"
 	@echo "  - nvm"
 	@echo "  - ai-agents"

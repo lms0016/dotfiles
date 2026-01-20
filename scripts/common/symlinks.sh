@@ -70,6 +70,15 @@ setup_vim() {
     fi
 }
 
+# Tmux symlinks
+setup_tmux() {
+    info "Setting up Tmux configuration..."
+
+    if [ -f "$DOTFILES_DIR/config/tmux/.tmux.conf" ]; then
+        create_symlink "$DOTFILES_DIR/config/tmux/.tmux.conf" "$HOME/.tmux.conf"
+    fi
+}
+
 # ============================================================================
 # Backup function
 # ============================================================================
@@ -84,6 +93,7 @@ backup_all() {
         "$HOME/.gitconfig"
         "$HOME/.gitignore_global"
         "$HOME/.vimrc"
+        "$HOME/.tmux.conf"
     )
 
     for file in "${files[@]}"; do
@@ -111,6 +121,7 @@ clean_symlinks() {
         "$HOME/.vimrc"
         "$HOME/.vim"
         "$HOME/.config/nvim"
+        "$HOME/.tmux.conf"
     )
 
     for link in "${symlinks[@]}"; do
@@ -131,6 +142,7 @@ setup_all() {
     setup_shell_bash
     setup_git
     setup_vim
+    setup_tmux
     success "All symlinks created"
 }
 
@@ -148,9 +160,10 @@ main() {
             ;;
         --module)
             case "${2:-}" in
-                git)  setup_git ;;
-                vim)  setup_vim ;;
-                *)    error "Usage: $0 --module [git|vim]" ;;
+                git)   setup_git ;;
+                vim)   setup_vim ;;
+                tmux)  setup_tmux ;;
+                *)     error "Usage: $0 --module [git|vim|tmux]" ;;
             esac
             ;;
         --all)
@@ -163,7 +176,7 @@ main() {
             clean_symlinks
             ;;
         *)
-            echo "Usage: $0 [--shell bash|zsh] [--module git|vim] [--all] [--backup] [--clean]"
+            echo "Usage: $0 [--shell bash|zsh] [--module git|vim|tmux] [--all] [--backup] [--clean]"
             exit 1
             ;;
     esac

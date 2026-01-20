@@ -11,6 +11,7 @@ wget
 vim
 htop
 tmux
+xclip
 tree
 unzip
 jq
