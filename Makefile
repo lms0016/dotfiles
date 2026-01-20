@@ -44,6 +44,10 @@ help:
 	@echo "  oh-my-zsh    - Install Oh My Zsh + Powerlevel10k"
 	@echo "  configs      - Install all configuration files"
 	@echo ""
+	@echo "Linux system setup (Ubuntu):"
+	@echo "  ssh-server   - Setup SSH server (openssh-server)"
+	@echo "  firewall     - Setup firewall (ufw)"
+	@echo ""
 	@echo "Utilities:"
 	@echo "  backup       - Backup existing dotfiles"
 	@echo "  clean        - Remove installed configs"
@@ -155,6 +159,25 @@ configs:
 symlinks: configs
 
 # ============================================================================
+# Linux System Setup (Ubuntu)
+# ============================================================================
+.PHONY: ssh-server
+ssh-server:
+ifeq ($(OS_FAMILY),linux)
+	@bash scripts/linux/ssh-server.sh
+else
+	@echo "ssh-server is only available on Linux"
+endif
+
+.PHONY: firewall
+firewall:
+ifeq ($(OS_FAMILY),linux)
+	@bash scripts/linux/firewall.sh
+else
+	@echo "firewall is only available on Linux"
+endif
+
+# ============================================================================
 # Utilities
 # ============================================================================
 .PHONY: backup
@@ -177,6 +200,10 @@ list:
 	@echo "  - nvm"
 	@echo "  - ai-agents"
 	@echo "  - oh-my-zsh"
+	@echo ""
+	@echo "Linux system setup (Ubuntu):"
+	@echo "  - ssh-server"
+	@echo "  - firewall"
 	@echo ""
 	@echo "Package lists ($(OS)):"
 	@ls -1 packages/$(OS_FAMILY)/*.txt 2>/dev/null || echo "  No package lists found"

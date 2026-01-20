@@ -48,6 +48,10 @@ make symlinks      # 建立所有 symlinks
 make backup        # 備份現有設定
 make clean         # 移除 symlinks
 make list          # 列出可用模組
+
+# Linux 系統設定 (Ubuntu)
+make ssh-server    # 設定 SSH 服務（openssh-server）
+make firewall      # 設定防火牆（ufw）
 ```
 
 ## 目錄結構
@@ -67,7 +71,7 @@ dotfiles/
 │   └── tmux/             # Tmux 設定
 ├── scripts/              # 安裝腳本
 │   ├── common/           # 跨平台腳本 (symlinks, uv, nvm, tmux, ai-agents, oh-my-zsh)
-│   ├── linux/            # Linux 專用
+│   ├── linux/            # Linux 專用 (packages, ssh-server, firewall)
 │   └── macos/            # macOS 專用
 ├── packages/             # 軟體清單
 │   ├── linux/            # Linux 套件 (apt, snap, flatpak)
@@ -141,6 +145,74 @@ git config user.email  # → alan@company.com
 # Clone 組織 repo 時自動使用對應的 SSH key
 git clone git@github.com:MyCompany/repo.git
 # 自動轉換為 → git@github-work:MyCompany/repo.git
+```
+
+## Linux 系統設定 (Ubuntu)
+
+針對新安裝的 Ubuntu 機器，提供快速設定 SSH 服務和防火牆的功能。
+
+### SSH 服務設定
+
+```bash
+make ssh-server
+```
+
+**功能：**
+- 安裝 `openssh-server`
+- 設定安全的 `sshd_config`
+- 啟用並啟動 SSH 服務
+
+**主要設定：**
+| 設定 | 預設值 | 說明 |
+|------|--------|------|
+| Port | 22 | SSH 連線 port |
+| PermitRootLogin | no | 禁止 root 直接登入 |
+| PasswordAuthentication | yes | 允許密碼登入（可在互動時改為 no） |
+| PubkeyAuthentication | yes | 允許金鑰登入 |
+| ClientAliveInterval | 60 | Keep-alive 間隔（秒） |
+| ClientAliveCountMax | 3 | Keep-alive 最大嘗試次數 |
+
+### 防火牆設定
+
+```bash
+make firewall
+```
+
+**功能：**
+- 安裝 `ufw`
+- 設定預設規則（拒絕進入、允許外出）
+- 開放 SSH port
+- 啟用防火牆
+
+**預設規則：**
+```
+預設拒絕 incoming（外部連入）
+預設允許 outgoing（對外連線）
+允許 SSH（port 22）
+```
+
+**互動選項：**
+- 可選擇開放 HTTP/HTTPS (80, 443)
+- 可選擇開放 RDP (3389) 供遠端桌面使用
+
+### 新機器設定流程
+
+```bash
+# 1. 在新 Ubuntu 機器上 clone dotfiles
+git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+
+# 2. 設定 SSH 服務（讓遠端可以連入）
+make ssh-server
+
+# 3. 設定防火牆
+make firewall
+
+# 4. 之後就可以從其他機器 SSH 連入繼續設定
+ssh user@<IP>
+
+# 5. 執行完整安裝
+make dev  # 或 make install
 ```
 
 ## 支援的作業系統
