@@ -140,6 +140,25 @@ install_flatpak_packages() {
 }
 
 # ============================================================================
+# Post-install setup
+# ============================================================================
+
+setup_package_aliases() {
+    info "Setting up package aliases..."
+
+    # Create ~/.local/bin if it doesn't exist
+    mkdir -p "$HOME/.local/bin"
+
+    # bat: Ubuntu/Debian installs as 'batcat', create symlink to 'bat'
+    if is_command_exists batcat && [ ! -e "$HOME/.local/bin/bat" ]; then
+        ln -s /usr/bin/batcat "$HOME/.local/bin/bat"
+        success "Created symlink: bat -> batcat"
+    elif [ -e "$HOME/.local/bin/bat" ]; then
+        success "bat symlink already exists"
+    fi
+}
+
+# ============================================================================
 # Main
 # ============================================================================
 main() {
@@ -157,6 +176,7 @@ main() {
     install_apt_packages
     install_snap_packages
     install_flatpak_packages
+    setup_package_aliases
 
     echo ""
     success "Package installation complete!"

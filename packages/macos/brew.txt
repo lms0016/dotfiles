@@ -1,4 +1,4 @@
-# APT packages for Ubuntu/Debian
+# Homebrew packages for macOS
 # Lines starting with # are comments
 # Add [full] tag to packages that should be skipped in minimal mode
 
@@ -12,28 +12,20 @@ vim
 htop
 tmux
 tree
-unzip
 jq
+bat
 
-# Shell
+# Shell (macOS has zsh by default, but brew version is more up-to-date)
 zsh
 
-# Build tools
-build-essential
+# Build tools (Xcode Command Line Tools provides most, but these are useful)
 make
 
 # ============================================================================
 # Development tools [full] - skipped in minimal mode
 # ============================================================================
-# nodejs [full]
-# python3-pip [full]
-# docker.io [full]
-
-# Network tools
-net-tools
-
-# Modern cat replacement (installed as batcat, symlinked to bat)
-bat
+# node [full]
+# python@3.12 [full]
 
 # ============================================================================
 # Add your packages below
