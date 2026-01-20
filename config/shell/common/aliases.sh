@@ -61,5 +61,14 @@ alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%Y-%m-%d %H:%M:%S"'
 
 # ============================================================================
+# AI CLI tools
+# ============================================================================
+alias c='claude'
+alias co='claude --model opus'
+alias cs='claude --model sonnet'
+alias ch='claude --model haiku'
+alias ge='gemini'
+
+# ============================================================================
 # Add your custom aliases below
 # ============================================================================

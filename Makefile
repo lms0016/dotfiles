@@ -39,6 +39,7 @@ help:
 	@echo "  uv           - Install uv (Python package manager)"
 	@echo "  nvm          - Install nvm and Node.js"
 	@echo "  ai-agents    - Install AI CLI tools (Copilot, Codex, Gemini, Claude)"
+	@echo "  oh-my-zsh    - Install Oh My Zsh + Powerlevel10k (Linux only)"
 	@echo "  symlinks     - Create all symlinks"
 	@echo ""
 	@echo "Utilities:"
@@ -56,7 +57,14 @@ install: packages symlinks
 	@echo "  Please restart your shell or run: source ~/.bashrc (or ~/.zshrc)"
 
 .PHONY: dev
-dev: packages shell-zsh git vim
+dev: packages git vim
+	@echo ""
+	@read -p "Install Oh My Zsh + Powerlevel10k? [y/N] " answer; \
+	if [ "$$answer" = "y" ] || [ "$$answer" = "Y" ]; then \
+		$(MAKE) oh-my-zsh; \
+	else \
+		$(MAKE) shell-zsh; \
+	fi
 	@echo ""
 	@echo "✓ Development machine setup complete!"
 	@echo "  Please restart your shell or run: source ~/.zshrc"
@@ -124,6 +132,14 @@ nvm:
 ai-agents:
 	@bash scripts/common/ai-agents.sh
 
+.PHONY: oh-my-zsh
+oh-my-zsh:
+ifeq ($(OS_FAMILY),linux)
+	@bash scripts/common/oh-my-zsh.sh
+else
+	@echo "Oh My Zsh installation script currently only supports Linux"
+endif
+
 .PHONY: symlinks
 symlinks:
 	@bash scripts/common/symlinks.sh --all
@@ -148,6 +164,7 @@ list:
 	@echo "  - uv"
 	@echo "  - nvm"
 	@echo "  - ai-agents"
+	@echo "  - oh-my-zsh"
 	@echo ""
 	@echo "Package lists ($(OS)):"
 	@ls -1 packages/$(OS_FAMILY)/*.txt 2>/dev/null || echo "  No package lists found"

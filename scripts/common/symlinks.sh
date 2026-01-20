@@ -80,6 +80,7 @@ backup_all() {
     local files=(
         "$HOME/.bashrc"
         "$HOME/.zshrc"
+        "$HOME/.p10k.zsh"
         "$HOME/.gitconfig"
         "$HOME/.gitignore_global"
         "$HOME/.vimrc"
@@ -104,6 +105,7 @@ clean_symlinks() {
     local symlinks=(
         "$HOME/.bashrc"
         "$HOME/.zshrc"
+        "$HOME/.p10k.zsh"
         "$HOME/.gitconfig"
         "$HOME/.gitignore_global"
         "$HOME/.vimrc"
