@@ -115,11 +115,6 @@ copy_config() {
     success "Copied $source -> $target"
 }
 
-# Alias for backward compatibility
-create_symlink() {
-    copy_config "$@"
-}
-
 # ============================================================================
 # Dotfiles path
 # ============================================================================

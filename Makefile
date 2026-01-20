@@ -26,9 +26,8 @@ help:
 	@echo "Usage: make <target>"
 	@echo ""
 	@echo "Main targets:"
-	@echo "  install      - Full installation (packages + configs)"
-	@echo "  dev          - Development machine setup (zsh + full tools)"
-	@echo "  server       - Server/test machine setup (bash + basic tools)"
+	@echo "  install      - Full installation (all modules)"
+	@echo "  tester       - Test machine setup (install without ai-agents, oh-my-zsh)"
 	@echo ""
 	@echo "Individual targets:"
 	@echo "  packages     - Install system packages only"
@@ -50,36 +49,22 @@ help:
 	@echo ""
 	@echo "Utilities:"
 	@echo "  backup       - Backup existing dotfiles"
-	@echo "  clean        - Remove installed configs"
 	@echo "  list         - List available modules"
 
 # ============================================================================
 # Main Installation Targets
 # ============================================================================
 .PHONY: install
-install: packages configs
+install: packages configs ssh-server firewall tmux uv nvm ai-agents oh-my-zsh ssh
 	@echo ""
 	@echo "✓ Installation complete!"
 	@echo "  Please restart your shell or run: source ~/.bashrc (or ~/.zshrc)"
 
-.PHONY: dev
-dev: packages git vim
+.PHONY: tester
+tester: packages configs ssh-server firewall tmux uv nvm ssh
 	@echo ""
-	@read -p "Install Oh My Zsh + Powerlevel10k? [y/N] " answer; \
-	if [ "$$answer" = "y" ] || [ "$$answer" = "Y" ]; then \
-		$(MAKE) oh-my-zsh; \
-	else \
-		$(MAKE) shell-zsh; \
-	fi
-	@echo ""
-	@echo "✓ Development machine setup complete!"
-	@echo "  Please restart your shell or run: source ~/.zshrc"
-
-.PHONY: server
-server: packages-minimal shell-bash git
-	@echo ""
-	@echo "✓ Server setup complete!"
-	@echo "  Please restart your shell or run: source ~/.bashrc"
+	@echo "✓ Test machine setup complete!"
+	@echo "  Please restart your shell or run: source ~/.bashrc (or ~/.zshrc)"
 
 # ============================================================================
 # Package Installation
@@ -94,33 +79,23 @@ else
 	@echo "Unsupported OS for package installation"
 endif
 
-.PHONY: packages-minimal
-packages-minimal:
-ifeq ($(OS_FAMILY),linux)
-	@bash scripts/linux/packages.sh --minimal
-else ifeq ($(OS_FAMILY),macos)
-	@bash scripts/macos/packages.sh --minimal
-else
-	@echo "Unsupported OS for package installation"
-endif
-
 # ============================================================================
 # Shell Configuration
 # ============================================================================
 .PHONY: shell-zsh
 shell-zsh: packages
-	@bash scripts/common/symlinks.sh --shell zsh
+	@bash scripts/common/configs.sh --shell zsh
 
 .PHONY: shell-bash
 shell-bash:
-	@bash scripts/common/symlinks.sh --shell bash
+	@bash scripts/common/configs.sh --shell bash
 
 # ============================================================================
 # Application Configuration
 # ============================================================================
 .PHONY: git
 git:
-	@bash scripts/common/symlinks.sh --module git
+	@bash scripts/common/configs.sh --module git
 
 .PHONY: ssh
 ssh:
@@ -128,7 +103,7 @@ ssh:
 
 .PHONY: vim
 vim:
-	@bash scripts/common/symlinks.sh --module vim
+	@bash scripts/common/configs.sh --module vim
 
 .PHONY: tmux
 tmux: packages
@@ -152,11 +127,7 @@ oh-my-zsh: packages
 
 .PHONY: configs
 configs:
-	@bash scripts/common/symlinks.sh --all
-
-# Alias for backward compatibility
-.PHONY: symlinks
-symlinks: configs
+	@bash scripts/common/configs.sh --all
 
 # ============================================================================
 # Linux System Setup (Ubuntu)
@@ -182,11 +153,7 @@ endif
 # ============================================================================
 .PHONY: backup
 backup:
-	@bash scripts/common/symlinks.sh --backup
-
-.PHONY: clean
-clean:
-	@bash scripts/common/symlinks.sh --clean
+	@bash scripts/common/configs.sh --backup
 
 .PHONY: list
 list:

@@ -35,7 +35,7 @@ Reference guide for where to place files and how to extend this dotfiles reposit
 
 ```
 dotfiles/
-├── config/           # Configuration files (symlinked to ~)
+├── config/           # Configuration files (copied to ~)
 │   ├── shell/
 │   │   ├── common/   # Shared aliases & functions
 │   │   ├── bash/     # Bash-specific (.bashrc)
@@ -45,7 +45,7 @@ dotfiles/
 │   └── <app>/        # Other app configs
 │
 ├── scripts/          # Installation scripts
-│   ├── common/       # Cross-platform (symlinks, uv, nvm, ai-agents)
+│   ├── common/       # Cross-platform (configs, uv, nvm, ai-agents)
 │   ├── linux/        # Linux-only scripts
 │   ├── macos/        # macOS scripts
 │   └── windows/      # [Future] Windows scripts
@@ -163,7 +163,7 @@ mkcd() {
 
 1. Create directory: `config/<app-name>/`
 2. Add config files (use dot prefix if needed)
-3. Update `scripts/common/symlinks.sh` to create symlinks
+3. Update `scripts/common/configs.sh` to copy config files
 4. Optionally add Makefile target
 
 Example for tmux:
@@ -180,10 +180,10 @@ mkdir -p config/tmux
 ```makefile
 .PHONY: tmux
 tmux:
-    @bash scripts/common/symlinks.sh --module tmux
+    @bash scripts/common/configs.sh --module tmux
 ```
 
-1. Update `scripts/common/symlinks.sh` to handle the module
+1. Update `scripts/common/configs.sh` to handle the module
 
 ## Machine-Specific Config
 
@@ -212,7 +212,7 @@ These are sourced automatically but not tracked in git.
 
 1. Create `config/vim/`
 1. Add `.vimrc` or `init.vim`
-1. Update symlinks script
+1. Update configs script
 1. Add `make vim` target to Makefile
 1. Update `README.md` (可用指令、目錄結構)
 

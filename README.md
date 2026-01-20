@@ -4,54 +4,44 @@
 
 ## 快速開始
 
-### 新電腦首次安裝
+支援 macOS 和 Ubuntu / Linux。
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
-
-# 2. 執行 bootstrap（安裝基本工具）
-cd ~/.dotfiles
-./install.sh
-
-# 3. 執行完整安裝
-make install
-```
-
-### 選擇性安裝
-
-```bash
-# 開發機（zsh + 完整工具）
-make dev
-
-# 測試機/伺服器（bash + 基本工具）
-make server
+git clone https://github.com/lms0016/dotfiles.git
+cd dotfiles
+./install.sh    # Bootstrap（安裝基本工具）
+make install    # 完整安裝
 ```
 
 ## 可用指令
 
-```bash
-make help          # 顯示所有可用指令
-make install       # 完整安裝
-make packages      # 只安裝軟體套件
-make shell-zsh     # 設定 zsh
-make shell-bash    # 設定 bash
-make git           # 設定 git
-make ssh           # 設定 SSH 多帳號（互動式）
-make vim           # 設定 vim
-make tmux          # 設定 tmux + TPM (插件管理器)
-make uv            # 安裝 uv (Python 套件管理器)
-make nvm           # 安裝 nvm 和 Node.js
-make ai-agents     # 安裝 AI CLI 工具 (Copilot, Codex, Gemini, Claude)
-make oh-my-zsh     # 安裝 Oh My Zsh + Powerlevel10k (Linux)
-make symlinks      # 建立所有 symlinks
-make backup        # 備份現有設定
-make clean         # 移除 symlinks
-make list          # 列出可用模組
+執行 `make help` 查看所有指令。
 
-# Linux 系統設定 (Ubuntu)
-make ssh-server    # 設定 SSH 服務（openssh-server）
-make firewall      # 設定防火牆（ufw）
+### make install 包含
+
+| 模組 | 說明 |
+|------|------|
+| packages | 系統軟體套件 |
+| configs | 設定檔（shell, git, vim） |
+| tmux | tmux + TPM |
+| uv | Python 套件管理器 |
+| nvm | nvm + Node.js |
+| ai-agents | AI CLI 工具 (Copilot, Codex, Gemini, Claude) |
+| oh-my-zsh | Oh My Zsh + Powerlevel10k |
+| ssh | SSH 多帳號設定（互動式） |
+| ssh-server | SSH 服務（僅 Linux） |
+| firewall | 防火牆（僅 Linux） |
+
+### 測試機
+
+```bash
+make tester        # 不含 ai-agents, oh-my-zsh
+```
+
+### 維護
+
+```bash
+make backup        # 備份現有設定
 ```
 
 ## 目錄結構
@@ -70,7 +60,7 @@ dotfiles/
 │   ├── vim/              # Vim 設定
 │   └── tmux/             # Tmux 設定
 ├── scripts/              # 安裝腳本
-│   ├── common/           # 跨平台腳本 (symlinks, uv, nvm, tmux, ai-agents, oh-my-zsh)
+│   ├── common/           # 跨平台腳本 (configs, uv, nvm, tmux, ai-agents, oh-my-zsh)
 │   ├── linux/            # Linux 專用 (packages, ssh-server, firewall)
 │   └── macos/            # macOS 專用
 ├── packages/             # 軟體清單
@@ -100,7 +90,12 @@ dotfiles/
 
 ### 機器專屬設定
 
-建立 `~/.bashrc.local` 或 `~/.zshrc.local`，這些檔案不會被 git 追蹤。
+建立 `~/.bashrc.local` 或 `~/.zshrc.local`，用於存放：
+- 機器特定的環境變數或 PATH
+- API keys、tokens 等敏感資訊
+- 不想同步到 git 的個人設定
+
+這些檔案不會被 git 追蹤。
 
 ## SSH 多帳號設定
 
@@ -108,13 +103,15 @@ dotfiles/
 
 ### 設定流程
 
+此功能已包含在 `make install`，或可單獨執行 `make ssh`。
+
 ```bash
 # 1. 複製 SSH key 到 ~/.ssh/（從備份）
 cp /path/to/backup/id_ed25519_work ~/.ssh/
 cp /path/to/backup/id_ed25519_work.pub ~/.ssh/
 chmod 600 ~/.ssh/id_ed25519_work
 
-# 2. 執行互動式設定
+# 2. 執行互動式設定（已包含在 make install）
 make ssh
 ```
 
@@ -149,7 +146,7 @@ git clone git@github.com:MyCompany/repo.git
 
 ## Linux 系統設定 (Ubuntu)
 
-針對新安裝的 Ubuntu 機器，提供快速設定 SSH 服務和防火牆的功能。
+以下功能已包含在 `make install` 中，僅在 Linux 環境執行。此處為詳細說明。
 
 ### SSH 服務設定
 
@@ -194,26 +191,6 @@ make firewall
 **互動選項：**
 - 可選擇開放 HTTP/HTTPS (80, 443)
 - 可選擇開放 RDP (3389) 供遠端桌面使用
-
-### 新機器設定流程
-
-```bash
-# 1. 在新 Ubuntu 機器上 clone dotfiles
-git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-
-# 2. 設定 SSH 服務（讓遠端可以連入）
-make ssh-server
-
-# 3. 設定防火牆
-make firewall
-
-# 4. 之後就可以從其他機器 SSH 連入繼續設定
-ssh user@<IP>
-
-# 5. 執行完整安裝
-make dev  # 或 make install
-```
 
 ## 支援的作業系統
 

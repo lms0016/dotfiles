@@ -109,39 +109,6 @@ backup_all() {
 }
 
 # ============================================================================
-# Clean function
-# ============================================================================
-clean_configs() {
-    info "Removing dotfiles configurations..."
-
-    local configs=(
-        "$HOME/.bashrc"
-        "$HOME/.zshrc"
-        "$HOME/.p10k.zsh"
-        "$HOME/.gitconfig"
-        "$HOME/.gitignore_global"
-        "$HOME/.vimrc"
-        "$HOME/.vim"
-        "$HOME/.config/nvim"
-        "$HOME/.tmux.conf"
-    )
-
-    for config in "${configs[@]}"; do
-        if [ -e "$config" ] || [ -L "$config" ]; then
-            rm -rf "$config"
-            success "Removed $config"
-        fi
-    done
-
-    success "Cleanup complete"
-}
-
-# Alias for backward compatibility
-clean_symlinks() {
-    clean_configs
-}
-
-# ============================================================================
 # Setup all
 # ============================================================================
 setup_all() {
@@ -179,11 +146,8 @@ main() {
         --backup)
             backup_all
             ;;
-        --clean)
-            clean_configs
-            ;;
         *)
-            echo "Usage: $0 [--shell bash|zsh] [--module git|vim|tmux] [--all] [--backup] [--clean]"
+            echo "Usage: $0 [--shell bash|zsh] [--module git|vim|tmux] [--all] [--backup]"
             exit 1
             ;;
     esac
