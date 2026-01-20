@@ -37,6 +37,7 @@ help:
 	@echo "  git          - Setup git configuration"
 	@echo "  vim          - Setup vim configuration"
 	@echo "  uv           - Install uv (Python package manager)"
+	@echo "  nvm          - Install nvm and Node.js"
 	@echo "  symlinks     - Create all symlinks"
 	@echo ""
 	@echo "Utilities:"
@@ -114,6 +115,10 @@ vim:
 uv:
 	@bash scripts/common/uv.sh
 
+.PHONY: nvm
+nvm:
+	@bash scripts/common/nvm.sh
+
 .PHONY: symlinks
 symlinks:
 	@bash scripts/common/symlinks.sh --all
@@ -136,6 +141,7 @@ list:
 	@echo "  - git"
 	@echo "  - vim"
 	@echo "  - uv"
+	@echo "  - nvm"
 	@echo ""
 	@echo "Package lists ($(OS)):"
 	@ls -1 packages/$(OS_FAMILY)/*.txt 2>/dev/null || echo "  No package lists found"
