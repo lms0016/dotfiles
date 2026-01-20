@@ -38,6 +38,7 @@ help:
 	@echo "  vim          - Setup vim configuration"
 	@echo "  uv           - Install uv (Python package manager)"
 	@echo "  nvm          - Install nvm and Node.js"
+	@echo "  ai-agents    - Install AI CLI tools (Copilot, Codex, Gemini, Claude)"
 	@echo "  symlinks     - Create all symlinks"
 	@echo ""
 	@echo "Utilities:"
@@ -119,6 +120,10 @@ uv:
 nvm:
 	@bash scripts/common/nvm.sh
 
+.PHONY: ai-agents
+ai-agents:
+	@bash scripts/common/ai-agents.sh
+
 .PHONY: symlinks
 symlinks:
 	@bash scripts/common/symlinks.sh --all
@@ -142,6 +147,7 @@ list:
 	@echo "  - vim"
 	@echo "  - uv"
 	@echo "  - nvm"
+	@echo "  - ai-agents"
 	@echo ""
 	@echo "Package lists ($(OS)):"
 	@ls -1 packages/$(OS_FAMILY)/*.txt 2>/dev/null || echo "  No package lists found"

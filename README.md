@@ -40,6 +40,7 @@ make git           # 設定 git
 make vim           # 設定 vim
 make uv            # 安裝 uv (Python 套件管理器)
 make nvm           # 安裝 nvm 和 Node.js
+make ai-agents     # 安裝 AI CLI 工具 (Copilot, Codex, Gemini, Claude)
 make symlinks      # 建立所有 symlinks
 make backup        # 備份現有設定
 make clean         # 移除 symlinks
@@ -60,7 +61,7 @@ dotfiles/
 │   ├── git/              # Git 設定
 │   └── vim/              # Vim 設定
 ├── scripts/              # 安裝腳本
-│   ├── common/           # 跨平台腳本 (symlinks, uv, nvm)
+│   ├── common/           # 跨平台腳本 (symlinks, uv, nvm, ai-agents)
 │   ├── linux/            # Linux 專用
 │   └── macos/            # macOS 專用
 ├── packages/             # 軟體清單

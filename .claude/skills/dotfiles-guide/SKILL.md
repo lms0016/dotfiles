@@ -29,6 +29,7 @@ Reference guide for where to place files and how to extend this dotfiles reposit
 | Add cross-platform script | `scripts/common/` |
 | Install Python (uv) | `make uv` |
 | Install Node.js (nvm) | `make nvm` |
+| Install AI CLI tools | `make ai-agents` |
 
 ## Directory Structure
 
@@ -44,7 +45,7 @@ dotfiles/
 │   └── <app>/        # Other app configs
 │
 ├── scripts/          # Installation scripts
-│   ├── common/       # Cross-platform (symlinks, uv, nvm)
+│   ├── common/       # Cross-platform (symlinks, uv, nvm, ai-agents)
 │   ├── linux/        # Linux-only scripts
 │   ├── macos/        # macOS scripts
 │   └── windows/      # [Future] Windows scripts
@@ -124,6 +125,18 @@ make nvm
 ```
 
 Installs [nvm](https://github.com/nvm-sh/nvm) and the latest LTS Node.js. After installation, use `nvm` to manage Node.js versions.
+
+### AI CLI Tools
+
+```bash
+make ai-agents
+```
+
+Installs AI coding assistants (requires npm, run `make nvm` first):
+- GitHub Copilot CLI (`@github/copilot`)
+- OpenAI Codex (`@openai/codex`)
+- Google Gemini CLI (`@google/gemini-cli`)
+- Claude Code (via curl installer)
 
 ## Adding Shell Configuration
 
