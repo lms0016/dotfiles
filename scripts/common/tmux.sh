@@ -70,8 +70,8 @@ install_tpm() {
     success "TPM installed"
 }
 
-setup_symlink() {
-    info "Setting up Tmux configuration symlink..."
+setup_config() {
+    info "Setting up Tmux configuration..."
 
     local source="$DOTFILES_DIR/config/tmux/.tmux.conf"
     local target="$HOME/.tmux.conf"
@@ -81,7 +81,7 @@ setup_symlink() {
         exit 1
     fi
 
-    create_symlink "$source" "$target"
+    copy_config "$source" "$target"
 }
 
 install_plugins() {
@@ -109,7 +109,7 @@ main() {
     check_tmux
     install_clipboard_tool
     install_tpm
-    setup_symlink
+    setup_config
     install_plugins
 
     echo ""

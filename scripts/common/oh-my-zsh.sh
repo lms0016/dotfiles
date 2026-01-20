@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Oh My Zsh + Powerlevel10k installation script (Linux only)
+# Oh My Zsh + Powerlevel10k installation script
 
 set -e
 
@@ -94,14 +94,14 @@ install_plugins() {
 setup_configs() {
     info "Setting up Oh My Zsh configuration files..."
 
-    # Backup existing .zshrc if it's not a symlink
+    # Backup existing .zshrc
     if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
         local backup="$HOME/.zshrc.backup.$(date +%Y%m%d_%H%M%S)"
         info "Backing up existing .zshrc to $backup"
         mv "$HOME/.zshrc" "$backup"
     fi
 
-    # Remove existing symlink or OMZ default .zshrc
+    # Remove existing .zshrc (symlink or file)
     if [ -L "$HOME/.zshrc" ] || [ -f "$HOME/.zshrc" ]; then
         rm -f "$HOME/.zshrc"
     fi
@@ -137,11 +137,6 @@ main() {
     echo "  Oh My Zsh + Powerlevel10k Setup"
     echo "======================================"
     echo ""
-
-    # Check if running on Linux
-    if [ "$(uname -s)" != "Linux" ]; then
-        error "This script currently only supports Linux"
-    fi
 
     install_zsh
     install_oh_my_zsh

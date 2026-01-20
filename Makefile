@@ -40,19 +40,19 @@ help:
 	@echo "  uv           - Install uv (Python package manager)"
 	@echo "  nvm          - Install nvm and Node.js"
 	@echo "  ai-agents    - Install AI CLI tools (Copilot, Codex, Gemini, Claude)"
-	@echo "  oh-my-zsh    - Install Oh My Zsh + Powerlevel10k (Linux only)"
-	@echo "  symlinks     - Create all symlinks"
+	@echo "  oh-my-zsh    - Install Oh My Zsh + Powerlevel10k"
+	@echo "  configs      - Install all configuration files"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  backup       - Backup existing dotfiles"
-	@echo "  clean        - Remove symlinks"
+	@echo "  clean        - Remove installed configs"
 	@echo "  list         - List available modules"
 
 # ============================================================================
 # Main Installation Targets
 # ============================================================================
 .PHONY: install
-install: packages symlinks
+install: packages configs
 	@echo ""
 	@echo "✓ Installation complete!"
 	@echo "  Please restart your shell or run: source ~/.bashrc (or ~/.zshrc)"
@@ -139,15 +139,15 @@ ai-agents:
 
 .PHONY: oh-my-zsh
 oh-my-zsh:
-ifeq ($(OS_FAMILY),linux)
 	@bash scripts/common/oh-my-zsh.sh
-else
-	@echo "Oh My Zsh installation script currently only supports Linux"
-endif
 
-.PHONY: symlinks
-symlinks:
+.PHONY: configs
+configs:
 	@bash scripts/common/symlinks.sh --all
+
+# Alias for backward compatibility
+.PHONY: symlinks
+symlinks: configs
 
 # ============================================================================
 # Utilities
