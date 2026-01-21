@@ -1,5 +1,6 @@
 # Local configuration files (machine-specific)
 *.local
+.claude.local/
 
 # Backup files
 *.bak
