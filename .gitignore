@@ -1,6 +1,7 @@
 # Local configuration files (machine-specific)
 *.local
 .claude.local/
+.claude/settings.local.json
 
 # Backup files
 *.bak
