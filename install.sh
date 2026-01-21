@@ -7,8 +7,9 @@ set -e
 # ============================================================================
 # Configuration
 # ============================================================================
-DOTFILES_REPO="https://github.com/YOUR_USERNAME/dotfiles.git"
-DOTFILES_DIR="$HOME/.dotfiles"
+# Detect the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$SCRIPT_DIR"
 
 # ============================================================================
 # Colors
@@ -97,19 +98,9 @@ main() {
         *)      error "Unsupported operating system" ;;
     esac
 
-    # Clone dotfiles if not already present
-    if [ ! -d "$DOTFILES_DIR" ]; then
-        info "Cloning dotfiles repository..."
-        git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
-        success "Dotfiles cloned to $DOTFILES_DIR"
-    else
-        info "Dotfiles directory already exists at $DOTFILES_DIR"
-        info "Pulling latest changes..."
-        cd "$DOTFILES_DIR" && git pull
-    fi
-
-    # Run make install
+    # Change to dotfiles directory
     cd "$DOTFILES_DIR"
+    info "Using dotfiles from: $DOTFILES_DIR"
 
     echo ""
     echo "======================================"
