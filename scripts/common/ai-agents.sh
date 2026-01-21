@@ -90,10 +90,10 @@ print_summary() {
     for package in "${!INSTALL_RESULTS[@]}"; do
         if [ "${INSTALL_RESULTS[$package]}" = "success" ]; then
             success "$package"
-            ((success_count++))
+            success_count=$((success_count + 1))
         else
             error "$package"
-            ((fail_count++))
+            fail_count=$((fail_count + 1))
         fi
     done
 
