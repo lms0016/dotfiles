@@ -1,0 +1,15 @@
+# Windows Package List (winget)
+# This is a reference list. Install individually:
+#   winget install <PackageIdentifier>
+#
+# To export your current installed packages as importable JSON:
+#   winget export -o winget-export.json
+
+# Shell & Terminal
+JanDeDobbeleer.OhMyPosh
+Microsoft.PowerShell
+Microsoft.WindowsTerminal
+
+# Dev Tools
+Git.Git
+Microsoft.VisualStudioCode

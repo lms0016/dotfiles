@@ -43,6 +43,7 @@ help:
 	@echo "  ai-agents    - Install AI CLI tools (Copilot, Codex, Gemini, Claude)"
 	@echo "  oh-my-zsh    - Install Oh My Zsh + Powerlevel10k"
 	@echo "  configs      - Install all configuration files"
+	@echo "  shell-pwsh   - Setup PowerShell configuration (Windows)"
 	@echo ""
 	@echo "Linux system setup (Ubuntu):"
 	@echo "  ssh-server   - Setup SSH server (openssh-server)"
@@ -138,6 +139,17 @@ configs:
 	@bash scripts/common/configs.sh --all
 
 # ============================================================================
+# Windows Configuration
+# ============================================================================
+.PHONY: shell-pwsh
+shell-pwsh:
+ifeq ($(OS_FAMILY),)
+	@bash scripts/common/configs.sh --windows-pwsh
+else
+	@echo "shell-pwsh is only available on Windows (run from Git Bash)"
+endif
+
+# ============================================================================
 # Linux System Setup (Ubuntu)
 # ============================================================================
 .PHONY: ssh-server
@@ -175,6 +187,7 @@ list:
 	@echo "  - nvm"
 	@echo "  - ai-agents"
 	@echo "  - oh-my-zsh"
+	@echo "  - shell-pwsh (Windows)"
 	@echo ""
 	@echo "Linux system setup (Ubuntu):"
 	@echo "  - ssh-server"

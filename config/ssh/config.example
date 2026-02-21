@@ -1,68 +1,77 @@
 # SSH Configuration Template
 # Copy this file to ~/.ssh/config and customize as needed
 #
-# Documentation: man ssh_config
+# ============================================================================
+# KEY MANAGEMENT: Choose one approach
+# ============================================================================
+#
+# Option A — 1Password SSH Agent (recommended)
+#   - Private keys stored in 1Password vault (never on disk)
+#   - IdentityFile points to the .pub file (public key only)
+#   - Works on Windows, macOS, Linux (with 1Password agent enabled)
+#   - No UseKeychain, no AddKeysToAgent needed
+#
+# Option B — Traditional key files
+#   - Private key stored as a file in ~/.ssh/
+#   - IdentityFile points to the private key (no .pub extension)
+#   - macOS: add UseKeychain yes to store passphrase in Keychain
+#   - Linux/Windows: AddKeysToAgent yes to cache key in ssh-agent
+#
+# ============================================================================
+# Machine-specific config (load before Host blocks so it can override)
+# ============================================================================
+# Create ~/.ssh/config.local for machine-specific entries and uncomment:
+# Include ~/.ssh/config.local
 
 # ============================================================================
 # Global Defaults
 # ============================================================================
 Host *
-    # macOS: Use Keychain to store passphrase
-    UseKeychain yes
-    AddKeysToAgent yes
-
-    # Only use explicitly specified identity files
     IdentitiesOnly yes
-
-    # Keep connection alive
     ServerAliveInterval 60
     ServerAliveCountMax 3
 
-# ============================================================================
-# GitHub Multi-Account Setup
-# ============================================================================
-# This setup allows you to use different SSH keys for different GitHub accounts
-# or organizations. Combined with git's includeIf and url rewrite, you can
-# automatically use the correct identity based on the repository.
+    # Option A (1Password): remove the line below
+    # Option B (traditional, macOS only): uncomment UseKeychain instead
+    AddKeysToAgent yes
+    # UseKeychain yes
 
-# Personal GitHub account
+# ============================================================================
+# GitHub — Personal Account
+# ============================================================================
 Host github.com
     HostName github.com
     User git
-    IdentityFile ~/.ssh/id_ed25519
 
-# Work/Organization GitHub account (example)
-# Usage: git clone git@github-work:organization/repo.git
-# Or use URL rewrite in .gitconfig to make it automatic
+    # Option A (1Password):
+    # IdentityFile ~/.ssh/id_ed25519.pub
+
+    # Option B (traditional):
+    # IdentityFile ~/.ssh/id_ed25519
+
+# ============================================================================
+# GitHub — Second Account (e.g. work or org)
+# ============================================================================
+# Usage: git clone git@github-work:org/repo.git
+# Or configure URL rewrite in .gitconfig to make it automatic
+#
 Host github-work
     HostName github.com
     User git
-    IdentityFile ~/.ssh/id_ed25519_work
+
+    # Option A (1Password):
+    # IdentityFile ~/.ssh/id_ed25519_work.pub
+
+    # Option B (traditional):
+    # IdentityFile ~/.ssh/id_ed25519_work
 
 # ============================================================================
-# Common Server Templates
+# Servers with Cloudflare Tunnel (machine-specific, don't commit)
 # ============================================================================
-
-# Example: Development server
-# Host dev
-#     HostName dev.example.com
-#     User developer
-#     IdentityFile ~/.ssh/id_ed25519
-#     Port 22
-
-# Example: Jump host / Bastion
-# Host bastion
-#     HostName bastion.example.com
-#     User admin
-#     IdentityFile ~/.ssh/id_ed25519
-
-# Host internal-server
-#     HostName 10.0.0.100
-#     User admin
-#     ProxyJump bastion
-
-# ============================================================================
-# Local/Private Servers (machine-specific, don't commit)
-# ============================================================================
-# Add your local servers in ~/.ssh/config.local and include it:
-# Include ~/.ssh/config.local
+# Add to ~/.ssh/config.local:
+#
+# Host myserver.example.com
+#     ProxyCommand cloudflared access ssh --hostname tunnel.example.com
+#     User git
+#     IdentityFile ~/.ssh/id_ed25519.pub    # Option A (1Password)
+#     # IdentityFile ~/.ssh/id_ed25519      # Option B (traditional)

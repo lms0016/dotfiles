@@ -4,7 +4,7 @@
 
 ## 快速開始
 
-支援 macOS 和 Ubuntu / Linux。
+支援 macOS、Ubuntu / Linux 和 Windows (PowerShell)。
 
 ```bash
 git clone https://github.com/lms0016/dotfiles.git
@@ -23,6 +23,7 @@ make install    # 完整安裝
 |------|------|
 | packages | 系統軟體套件 |
 | configs | 設定檔（shell, git, vim） |
+| shell-pwsh | PowerShell 設定（僅 Windows） |
 | tmux | tmux + TPM |
 | uv | Python 套件管理器 |
 | nvm | nvm + Node.js |
@@ -54,7 +55,8 @@ dotfiles/
 │   ├── shell/            # Shell 設定
 │   │   ├── common/       # 共用 aliases/functions
 │   │   ├── bash/         # Bash 設定
-│   │   └── zsh/          # Zsh 設定
+│   │   ├── zsh/          # Zsh 設定
+│   │   └── powershell/   # PowerShell 設定 + oh-my-posh 主題
 │   ├── git/              # Git 設定
 │   ├── ssh/              # SSH 設定模板
 │   ├── vim/              # Vim 設定
@@ -62,10 +64,12 @@ dotfiles/
 ├── scripts/              # 安裝腳本
 │   ├── common/           # 跨平台腳本 (configs, uv, nvm, tmux, ai-agents, oh-my-zsh)
 │   ├── linux/            # Linux 專用 (packages, ssh-server, firewall)
-│   └── macos/            # macOS 專用
+│   ├── macos/            # macOS 專用
+│   └── windows/          # Windows 專用 (setup-powershell.ps1)
 ├── packages/             # 軟體清單
 │   ├── linux/            # Linux 套件 (apt, snap, flatpak)
-│   └── macos/            # macOS 套件 (brew)
+│   ├── macos/            # macOS 套件 (brew)
+│   └── windows/          # Windows 套件 (winget.txt)
 └── lib/                  # 共用函數庫
 ```
 
@@ -83,6 +87,9 @@ dotfiles/
 **macOS:**
 - `packages/macos/brew.txt` - Homebrew 套件
 - `packages/macos/cask.txt` - Homebrew Cask 應用程式
+
+**Windows:**
+- `packages/windows/winget.txt` - winget 套件
 
 ### 新增 Shell Aliases
 
@@ -192,8 +199,61 @@ make firewall
 - 可選擇開放 HTTP/HTTPS (80, 443)
 - 可選擇開放 RDP (3389) 供遠端桌面使用
 
+## Windows 設定
+
+### PowerShell 環境
+
+```powershell
+# 直接執行安裝腳本
+.\scripts\windows\setup-powershell.ps1
+```
+
+或透過 make（需要 Git Bash / MSYS2）：
+
+```bash
+make shell-pwsh
+```
+
+**安裝內容：**
+- PowerShell profile (`Microsoft.PowerShell_profile.ps1`)
+- oh-my-posh 主題 (`alan.omp.yaml`)
+
+**安裝步驟：**
+
+```powershell
+# 1. 安裝 PowerShell 7 和 oh-my-posh
+winget install Microsoft.PowerShell
+winget install JanDeDobbeleer.OhMyPosh
+
+# 2. 重開 PowerShell，然後執行安裝腳本（含字型、模組、profile）
+.\scripts\windows\setup-powershell.ps1
+```
+
+安裝腳本會自動完成：
+- `oh-my-posh font install CascadiaCode`（Nerd Font）
+- `Install-Module Terminal-Icons`
+- `Install-Module PSReadLine -AllowPrerelease`
+- 複製 profile 和 oh-my-posh 主題
+
+> 安裝完成後需在 Windows Terminal 的設定中將字型改為 **CascadiaCode NF**。
+
+### 套件安裝
+
+`packages/windows/winget.txt` 是套件參考清單，逐一安裝：
+
+```powershell
+winget install JanDeDobbeleer.OhMyPosh
+winget install Microsoft.PowerShell
+# ... 依清單安裝其他套件
+```
+
+> 若要匯出目前機器已安裝的套件清單（JSON 格式，可用 `winget import`）：
+> ```powershell
+> winget export -o winget-export.json
+> ```
+
 ## 支援的作業系統
 
 - [x] Ubuntu / Debian
 - [x] macOS (Homebrew)
-- [ ] Windows（規劃中）
+- [x] Windows (PowerShell + oh-my-posh)

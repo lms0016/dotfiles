@@ -1,0 +1,126 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
+final_space: true
+console_title: true
+console_title_style: folder
+blocks:
+  - type: prompt
+    alignment: left
+    horizontal_offset: 0
+    vertical_offset: 0
+    segments:
+      - type: os
+        style: diamond
+        foreground: '#000000'
+        background: '#d3d7cf'
+        leading_diamond: ╭─
+      - type: battery
+        style: powerline
+        powerline_symbol: 
+        foreground: '#193549'
+        background: '#ffeb3b'
+        properties:
+          battery_icon: ''
+          discharging_icon: ' '
+          charging_icon: ' '
+          charged_icon: ' '
+          color_background: true
+          charged_color: '#4caf50'
+          charging_color: '#40c4ff'
+          discharging_color: '#ff5722'
+          postfix: ' '
+          display_charging: true
+          display_charged: true
+      - type: path
+        style: diamond
+        powerline_symbol: 
+        invert_powerline: false
+        foreground: '#ffffff'
+        background: '#ff479c'
+        leading_diamond: 
+        trailing_diamond: 
+        properties:
+          prefix: '  '
+          style: folder
+      - type: git
+        style: powerline
+        powerline_symbol: 
+        invert_powerline: false
+        foreground: '#193549'
+        background: '#fffb38'
+        leading_diamond: ''
+        trailing_diamond: ''
+        properties:
+          display_status: true
+          display_stash_count: true
+          display_upstream_icon: true
+      - type: dotnet
+        style: powerline
+        powerline_symbol: 
+        invert_powerline: false
+        foreground: '#ffffff'
+        background: '#6CA35E'
+        leading_diamond: ''
+        trailing_diamond: ''
+        properties:
+          display_version: true
+          prefix: '  '
+      - type: azfunc
+        style: powerline
+        powerline_symbol: 
+        foreground: '#ffffff'
+        background: '#FEAC19'
+        properties:
+          prefix: '  '
+          display_version: true
+          display_mode: files
+      - type: node
+        style: powerline
+        powerline_symbol: 
+        foreground: '#ffffff'
+        background: '#6CA35E'
+        properties:
+          prefix: '  '
+      - type: java
+        style: powerline
+        powerline_symbol: 
+        foreground: '#ffffff'
+        background: '#4063D8'
+        properties:
+          prefix: '  '
+      - type: go
+        style: powerline
+        powerline_symbol: 
+        foreground: '#ffffff'
+        background: '#7FD5EA'
+        properties:
+          prefix: ' ﳑ '
+      - type: exit
+        style: powerline
+        powerline_symbol: 
+        invert_powerline: false
+        foreground: '#ffffff'
+        background: '#2e9599'
+        leading_diamond: ''
+        trailing_diamond: 
+        properties:
+          always_enabled: true
+          color_background: true
+          display_exit_code: false
+          error_color: '#f1184c'
+          prefix: ' '
+      - type: root
+        style: powerline
+        powerline_symbol: 
+        background: '#ffc107'
+        foreground: '#18354c'
+        template: '  '
+      - type: executiontime
+        background: '#26BDBB'
+        foreground: '#0C212F'
+        leading_diamond: <transparent,#26BDBB></>
+        properties:
+          postfix: 's '
+          style: dallas
+          threshold: 0
+        style: diamond
+        trailing_diamond: 
