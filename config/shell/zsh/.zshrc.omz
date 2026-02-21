@@ -31,7 +31,7 @@ plugins=(
     copyfile
     copypath
     colored-man-pages
-    zsh-z
+    z
     zsh-autosuggestions
     zsh-completions
     zsh-syntax-highlighting

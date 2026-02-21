@@ -34,7 +34,15 @@ get_local_ip() {
 }
 
 check_sshd_config_syntax() {
-    sudo sshd -t 2>/dev/null
+    local sshd_bin
+    sshd_bin=$(command -v sshd || command -v /usr/sbin/sshd 2>/dev/null) || true
+    if [ -z "$sshd_bin" ]; then
+        warning "sshd binary not found, skipping syntax check"
+        return 0
+    fi
+    # /run/sshd is required for privilege separation (not created on WSL2 at boot)
+    sudo mkdir -p /run/sshd
+    sudo "$sshd_bin" -t 2>&1
     return $?
 }
 
@@ -45,7 +53,7 @@ check_sshd_config_syntax() {
 install_openssh_server() {
     info "Checking openssh-server..."
 
-    if dpkg -l openssh-server &> /dev/null; then
+    if dpkg -l openssh-server 2>/dev/null | grep -q '^ii'; then
         success "openssh-server already installed"
     else
         info "Installing openssh-server..."
@@ -88,7 +96,7 @@ PubkeyAuthentication $PUBKEY_AUTH
 PasswordAuthentication $PASSWORD_AUTH
 
 # Disable other authentication methods
-ChallengeResponseAuthentication no
+KbdInteractiveAuthentication no
 KerberosAuthentication no
 GSSAPIAuthentication no
 
@@ -254,7 +262,12 @@ main() {
                 show_connection_info
             else
                 error "SSH config syntax error! Restoring backup..."
-                sudo cp "$SSHD_CONFIG_BACKUP" "$SSHD_CONFIG"
+                if [ -f "$SSHD_CONFIG_BACKUP" ]; then
+                    sudo cp "$SSHD_CONFIG_BACKUP" "$SSHD_CONFIG"
+                else
+                    warning "No backup found, removing generated config..."
+                    sudo rm -f "$SSHD_CONFIG"
+                fi
                 exit 1
             fi
             ;;
@@ -270,7 +283,12 @@ main() {
                 show_connection_info
             else
                 error "SSH config syntax error! Restoring backup..."
-                sudo cp "$SSHD_CONFIG_BACKUP" "$SSHD_CONFIG"
+                if [ -f "$SSHD_CONFIG_BACKUP" ]; then
+                    sudo cp "$SSHD_CONFIG_BACKUP" "$SSHD_CONFIG"
+                else
+                    warning "No backup found, removing generated config..."
+                    sudo rm -f "$SSHD_CONFIG"
+                fi
                 exit 1
             fi
             ;;
