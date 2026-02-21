@@ -76,6 +76,10 @@ is_root() {
     [ "$EUID" -eq 0 ]
 }
 
+is_wsl() {
+    grep -qi microsoft /proc/version 2>/dev/null
+}
+
 # SUDO command: empty if already root, otherwise "sudo"
 # Usage: $SUDO apt-get install ...
 if is_root; then
