@@ -38,11 +38,11 @@ if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
 Write-Step "Installing PowerShell modules..."
 
 Write-Info "Installing Terminal-Icons..."
-Install-Module -Name Terminal-Icons -Repository PSGallery -Force
+Install-Module -Name Terminal-Icons -Repository PSGallery -Force -Scope CurrentUser
 Write-Success "Terminal-Icons installed"
 
 Write-Info "Installing PSReadLine..."
-Install-Module PSReadLine -AllowPrerelease -Force
+Install-Module PSReadLine -AllowPrerelease -Force -Scope CurrentUser
 Write-Success "PSReadLine installed"
 
 # ============================================================================

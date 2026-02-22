@@ -163,12 +163,6 @@ add_common_rules() {
 # ============================================================================
 
 main() {
-    # Check if running on Linux
-    if [ "$(uname -s)" != "Linux" ]; then
-        error "This script is only for Linux systems"
-        exit 1
-    fi
-
     # Check for Ubuntu/Debian
     if ! command -v apt-get &> /dev/null; then
         error "This script requires apt-get (Ubuntu/Debian)"

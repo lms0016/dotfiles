@@ -7,13 +7,24 @@ export DOTFILES_DIR
 
 # OS Detection
 UNAME_S := $(shell uname -s)
+IS_WSL  := $(shell grep -qi microsoft /proc/version 2>/dev/null && echo 1 || echo 0)
+
 ifeq ($(UNAME_S),Linux)
-    OS := linux
-    OS_FAMILY := linux
+    ifeq ($(IS_WSL),1)
+        OS_FAMILY := wsl
+    else
+        OS_FAMILY := linux
+    endif
 endif
 ifeq ($(UNAME_S),Darwin)
-    OS := macos
     OS_FAMILY := macos
+endif
+
+# WSL uses Linux scripts for most targets
+ifeq ($(OS_FAMILY),wsl)
+    OS_FAMILY_BASE := linux
+else
+    OS_FAMILY_BASE := $(OS_FAMILY)
 endif
 
 # Default target
@@ -21,7 +32,7 @@ endif
 help:
 	@echo "Dotfiles Installation"
 	@echo "====================="
-	@echo "Detected OS: $(OS)"
+	@echo "Detected OS: $(OS_FAMILY)"
 	@echo ""
 	@echo "Usage: make <target>"
 	@echo ""
@@ -43,7 +54,6 @@ help:
 	@echo "  ai-agents    - Install AI CLI tools (Copilot, Codex, Gemini, Claude)"
 	@echo "  oh-my-zsh    - Install Oh My Zsh + Powerlevel10k"
 	@echo "  configs      - Install all configuration files"
-	@echo "  shell-pwsh   - Setup PowerShell configuration (Windows)"
 	@echo ""
 	@echo "Linux system setup (Ubuntu):"
 	@echo "  ssh-server   - Setup SSH server (openssh-server)"
@@ -80,9 +90,9 @@ ci-test: packages configs tmux uv nvm
 # ============================================================================
 .PHONY: packages
 packages:
-ifeq ($(OS_FAMILY),linux)
+ifeq ($(OS_FAMILY_BASE),linux)
 	@bash scripts/linux/packages.sh
-else ifeq ($(OS_FAMILY),macos)
+else ifeq ($(OS_FAMILY_BASE),macos)
 	@bash scripts/macos/packages.sh
 else
 	@echo "Unsupported OS for package installation"
@@ -139,22 +149,11 @@ configs:
 	@bash scripts/common/configs.sh --all
 
 # ============================================================================
-# Windows Configuration
-# ============================================================================
-.PHONY: shell-pwsh
-shell-pwsh:
-ifeq ($(OS_FAMILY),)
-	@bash scripts/common/configs.sh --windows-pwsh
-else
-	@echo "shell-pwsh is only available on Windows (run from Git Bash)"
-endif
-
-# ============================================================================
 # Linux System Setup (Ubuntu)
 # ============================================================================
 .PHONY: ssh-server
 ssh-server:
-ifeq ($(OS_FAMILY),linux)
+ifeq ($(OS_FAMILY_BASE),linux)
 	@bash scripts/linux/ssh-server.sh
 else
 	@echo "ssh-server is only available on Linux"
@@ -162,7 +161,7 @@ endif
 
 .PHONY: firewall
 firewall:
-ifeq ($(OS_FAMILY),linux)
+ifeq ($(OS_FAMILY_BASE),linux)
 	@bash scripts/linux/firewall.sh
 else
 	@echo "firewall is only available on Linux"
@@ -187,11 +186,10 @@ list:
 	@echo "  - nvm"
 	@echo "  - ai-agents"
 	@echo "  - oh-my-zsh"
-	@echo "  - shell-pwsh (Windows)"
 	@echo ""
 	@echo "Linux system setup (Ubuntu):"
 	@echo "  - ssh-server"
 	@echo "  - firewall"
 	@echo ""
-	@echo "Package lists ($(OS)):"
-	@ls -1 packages/$(OS_FAMILY)/*.txt 2>/dev/null || echo "  No package lists found"
+	@echo "Package lists ($(OS_FAMILY)):"
+	@ls -1 packages/$(OS_FAMILY_BASE)/*.txt 2>/dev/null || echo "  No package lists found"

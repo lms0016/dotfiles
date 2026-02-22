@@ -37,28 +37,30 @@ error() {
 detect_os() {
     case "$(uname -s)" in
         Linux*)
-            if [ -f /etc/os-release ]; then
+            if grep -qi microsoft /proc/version 2>/dev/null; then
+                echo "wsl"
+            elif [ -f /etc/os-release ]; then
                 . /etc/os-release
                 echo "$ID"
             else
                 echo "linux"
             fi
             ;;
-        Darwin*)
-            echo "macos"
-            ;;
-        CYGWIN*|MINGW*|MSYS*)
-            echo "windows"
-            ;;
-        *)
-            echo "unknown"
-            ;;
+        Darwin*)  echo "macos" ;;
+        CYGWIN*|MINGW*|MSYS*) echo "windows" ;;
+        *)        echo "unknown" ;;
     esac
 }
 
 detect_os_family() {
     case "$(uname -s)" in
-        Linux*)   echo "linux" ;;
+        Linux*)
+            if grep -qi microsoft /proc/version 2>/dev/null; then
+                echo "wsl"
+            else
+                echo "linux"
+            fi
+            ;;
         Darwin*)  echo "macos" ;;
         CYGWIN*|MINGW*|MSYS*) echo "windows" ;;
         *)        echo "unknown" ;;

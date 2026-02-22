@@ -140,9 +140,6 @@ main() {
                 *)     error "Usage: $0 --module [git|vim|tmux]" ;;
             esac
             ;;
-        --windows-pwsh)
-            powershell.exe -ExecutionPolicy Bypass -File "$DOTFILES_DIR/scripts/windows/setup-powershell.ps1"
-            ;;
         --all)
             setup_all
             ;;
@@ -150,7 +147,7 @@ main() {
             backup_all
             ;;
         *)
-            echo "Usage: $0 [--shell bash|zsh] [--module git|vim|tmux] [--all] [--backup] [--windows-pwsh]"
+            echo "Usage: $0 [--shell bash|zsh] [--module git|vim|tmux] [--all] [--backup]"
             exit 1
             ;;
     esac

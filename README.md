@@ -4,13 +4,23 @@
 
 ## 快速開始
 
-支援 macOS、Ubuntu / Linux 和 Windows (PowerShell)。
+支援 macOS、Ubuntu / Linux、WSL2 和 Windows (PowerShell 7)。
+
+**Linux / macOS / WSL2：**
 
 ```bash
 git clone https://github.com/lms0016/dotfiles.git
 cd dotfiles
 ./install.sh    # Bootstrap（安裝基本工具）
 make install    # 完整安裝
+```
+
+**Windows（PowerShell 7）：**
+
+```powershell
+git clone https://github.com/lms0016/dotfiles.git
+cd dotfiles
+pwsh -ExecutionPolicy Bypass -File install.ps1
 ```
 
 ## 可用指令
@@ -23,7 +33,6 @@ make install    # 完整安裝
 |------|------|
 | packages | 系統軟體套件 |
 | configs | 設定檔（shell, git, vim） |
-| shell-pwsh | PowerShell 設定（僅 Windows） |
 | tmux | tmux + TPM |
 | uv | Python 套件管理器 |
 | nvm | nvm + Node.js |
@@ -201,59 +210,40 @@ make firewall
 
 ## Windows 設定
 
-### PowerShell 環境
+### 完整安裝
+
+使用 PowerShell 7 執行 `install.ps1`，會自動完成所有步驟：
 
 ```powershell
-# 直接執行安裝腳本
-.\scripts\windows\setup-powershell.ps1
+pwsh -ExecutionPolicy Bypass -File install.ps1
 ```
 
-或透過 make（需要 Git Bash / MSYS2）：
+`install.ps1` 會依序執行：
 
-```bash
-make shell-pwsh
-```
-
-**安裝內容：**
-- PowerShell profile (`Microsoft.PowerShell_profile.ps1`)
-- oh-my-posh 主題 (`alan.omp.yaml`)
-
-**安裝步驟：**
-
-```powershell
-# 1. 安裝 PowerShell 7 和 oh-my-posh
-winget install Microsoft.PowerShell
-winget install JanDeDobbeleer.OhMyPosh
-
-# 2. 重開 PowerShell，然後執行安裝腳本（含字型、模組、profile）
-.\scripts\windows\setup-powershell.ps1
-```
-
-安裝腳本會自動完成：
-- `oh-my-posh font install CascadiaCode`（Nerd Font）
-- `Install-Module Terminal-Icons`
-- `Install-Module PSReadLine -AllowPrerelease`
-- 複製 profile 和 oh-my-posh 主題
+1. 從 `packages/windows/winget.txt` 安裝 winget 套件
+2. 執行 `scripts/windows/setup-powershell.ps1`，包含：
+   - `oh-my-posh font install CascadiaCode`（Nerd Font）
+   - `Install-Module Terminal-Icons`
+   - `Install-Module PSReadLine -AllowPrerelease`
+   - 複製 profile (`Microsoft.PowerShell_profile.ps1`) 和 oh-my-posh 主題
 
 > 安裝完成後需在 Windows Terminal 的設定中將字型改為 **CascadiaCode NF**。
 
-### 套件安裝
+### 套件清單
 
-`packages/windows/winget.txt` 是套件參考清單，逐一安裝：
+編輯 `packages/windows/winget.txt` 新增或移除套件，一行一個 package ID：
 
 ```powershell
-winget install JanDeDobbeleer.OhMyPosh
-winget install Microsoft.PowerShell
-# ... 依清單安裝其他套件
-```
+# 查看目前清單
+cat packages/windows/winget.txt
 
-> 若要匯出目前機器已安裝的套件清單（JSON 格式，可用 `winget import`）：
-> ```powershell
-> winget export -o winget-export.json
-> ```
+# 匯出目前機器已安裝的套件（JSON 格式，可用 winget import）
+winget export -o winget-export.json
+```
 
 ## 支援的作業系統
 
 - [x] Ubuntu / Debian
 - [x] macOS (Homebrew)
-- [x] Windows (PowerShell + oh-my-posh)
+- [x] WSL2 (視為獨立平台，執行 Linux 腳本)
+- [x] Windows (PowerShell 7 + `install.ps1`)

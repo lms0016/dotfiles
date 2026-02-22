@@ -129,8 +129,8 @@ main() {
     local os_family
     os_family=$(detect_os_family)
 
-    if [[ "$os_family" != "linux" && "$os_family" != "macos" ]]; then
-        error "This script only supports Linux and macOS"
+    if [[ "$os_family" != "linux" && "$os_family" != "macos" && "$os_family" != "wsl" ]]; then
+        error "This script only supports Linux, macOS, and WSL"
         exit 1
     fi
 

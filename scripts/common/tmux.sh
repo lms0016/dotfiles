@@ -27,9 +27,16 @@ check_tmux() {
 
 install_clipboard_tool() {
     info "Checking clipboard support..."
+    local os_family
+    os_family=$(detect_os_family)
+
+    if [ "$os_family" = "wsl" ]; then
+        info "WSL detected: clipboard integration uses Windows clipboard natively"
+        return 0
+    fi
 
     # Linux: need xclip or xsel
-    if [ "$(detect_os_family)" = "linux" ]; then
+    if [ "$os_family" = "linux" ]; then
         if is_command_exists xclip; then
             success "xclip is already installed"
             return 0
@@ -54,7 +61,7 @@ install_clipboard_tool() {
     fi
 
     # macOS: pbcopy/pbpaste are built-in
-    if [ "$(detect_os_family)" = "macos" ]; then
+    if [ "$os_family" = "macos" ]; then
         success "macOS clipboard (pbcopy/pbpaste) is built-in"
     fi
 }

@@ -17,6 +17,7 @@ Reference guide for where to place files and how to extend this dotfiles reposit
 | Add snap package | `packages/linux/snap.txt` |
 | Add flatpak package | `packages/linux/flatpak.txt` |
 | Add brew package (macOS) | `packages/macos/brew.txt` |
+| Add winget package (Windows) | `packages/windows/winget.txt` |
 | Add shell alias | `config/shell/common/aliases.sh` |
 | Add shell function | `config/shell/common/functions.sh` |
 | Add bash-only config | `config/shell/bash/.bashrc` |
@@ -35,20 +36,22 @@ Reference guide for where to place files and how to extend this dotfiles reposit
 
 ```
 dotfiles/
+├── install.sh        # Bootstrap for Linux / macOS / WSL2
+├── install.ps1       # Bootstrap for Windows (PowerShell 7)
 ├── config/           # Configuration files (copied to ~)
 │   ├── shell/
 │   │   ├── common/   # Shared aliases & functions
 │   │   ├── bash/     # Bash-specific (.bashrc)
 │   │   ├── zsh/      # Zsh-specific (.zshrc)
-│   │   └── powershell/  # [Future] Windows
+│   │   └── powershell/  # PowerShell profile + oh-my-posh theme
 │   ├── git/          # Git config files
 │   └── <app>/        # Other app configs
 │
 ├── scripts/          # Installation scripts
 │   ├── common/       # Cross-platform (configs, uv, nvm, ai-agents)
-│   ├── linux/        # Linux-only scripts
+│   ├── linux/        # Linux-only scripts (also run on WSL2)
 │   ├── macos/        # macOS scripts
-│   └── windows/      # [Future] Windows scripts
+│   └── windows/      # Windows scripts (setup-powershell.ps1)
 │
 ├── packages/         # Package lists (one per line)
 │   ├── linux/
@@ -57,7 +60,8 @@ dotfiles/
 │   │   └── flatpak.txt
 │   ├── macos/
 │   │   └── brew.txt
-│   └── windows/      # [Future] winget.txt
+│   └── windows/
+│       └── winget.txt
 │
 └── lib/              # Shared shell functions
     └── utils.sh

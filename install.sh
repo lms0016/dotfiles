@@ -25,18 +25,12 @@ success() { echo -e "${GREEN}[OK]${NC} $1"; }
 warning() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
+source "$DOTFILES_DIR/lib/utils.sh"
+
 # ============================================================================
 # OS Detection
 # ============================================================================
-detect_os() {
-    case "$(uname -s)" in
-        Linux*)   echo "linux" ;;
-        Darwin*)  echo "macos" ;;
-        *)        echo "unknown" ;;
-    esac
-}
-
-OS=$(detect_os)
+OS=$(detect_os_family)
 info "Detected OS: $OS"
 
 # ============================================================================
@@ -93,9 +87,9 @@ main() {
 
     # Install basic dependencies based on OS
     case "$OS" in
-        linux)  install_dependencies_linux ;;
-        macos)  install_dependencies_macos ;;
-        *)      error "Unsupported operating system" ;;
+        linux|wsl) install_dependencies_linux ;;
+        macos)     install_dependencies_macos ;;
+        *)         error "Unsupported operating system" ;;
     esac
 
     # Change to dotfiles directory

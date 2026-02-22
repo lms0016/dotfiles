@@ -9,7 +9,7 @@ Cross-platform dotfiles manager supporting macOS, Ubuntu/Linux, Windows (PowerSh
 ## Key Commands
 
 ```bash
-# Full installation
+# Full installation (Linux / macOS / WSL2)
 ./install.sh          # Bootstrap (installs git/make/curl, clones repo)
 make install          # Run all modules
 
@@ -26,15 +26,19 @@ make uv               # Python package manager
 make nvm              # Node.js version manager
 make ai-agents        # AI CLI tools (requires nvm first)
 make oh-my-zsh        # Oh My Zsh + Powerlevel10k
-make shell-pwsh       # PowerShell (Windows/Git Bash only)
 
-# Linux-only
+# Linux-only (also runs on WSL2)
 make ssh-server       # OpenSSH server setup
 make firewall         # UFW firewall
 
 # Testing
 make ci-test          # Non-interactive CI test (used by GitHub Actions)
 make tester           # Test machine setup (skips ai-agents, oh-my-zsh)
+```
+
+```powershell
+# Windows (PowerShell 7)
+pwsh -ExecutionPolicy Bypass -File install.ps1   # Full Windows setup
 ```
 
 ## Architecture
@@ -54,9 +58,10 @@ Each module follows:
 
 ### Platform detection
 
-- `Makefile`: uses `uname -s` to set `OS_FAMILY` (linux/macos), empty on Windows
-- `lib/utils.sh`: `detect_os()` returns distro ID, `detect_os_family()` returns linux/macos/windows
-- Windows targets check `OS_FAMILY` is empty (running from Git Bash/MSYS2)
+- `Makefile`: uses `uname -s` + `/proc/version` to set `OS_FAMILY` (linux/macos/wsl); `OS_FAMILY_BASE` maps wsl→linux for script routing. Makefile is **not used on Windows**.
+- `lib/utils.sh`: `detect_os_family()` returns linux/macos/wsl/windows; `detect_os()` returns distro ID (ubuntu/etc.) or wsl/macos/windows
+- WSL2 is treated as an independent platform (`wsl`); Linux scripts run on both `linux` and `wsl` via `OS_FAMILY_BASE`
+- **Windows**: uses `install.ps1` (PowerShell 7) — does not go through Makefile
 
 ### Shell config layering
 
