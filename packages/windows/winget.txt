@@ -9,7 +9,3 @@
 JanDeDobbeleer.OhMyPosh
 Microsoft.PowerShell
 Microsoft.WindowsTerminal
-
-# Dev Tools
-Git.Git
-Microsoft.VisualStudioCode
