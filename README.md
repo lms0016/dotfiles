@@ -30,7 +30,7 @@ pwsh -ExecutionPolicy Bypass -File install.ps1
 ### make install 包含
 
 | 模組 | 說明 |
-|------|------|
+| ---- | ---- |
 | packages | 系統軟體套件 |
 | configs | 設定檔（shell, git, vim） |
 | tmux | tmux + TPM |
@@ -56,7 +56,7 @@ make backup        # 備份現有設定
 
 ## 目錄結構
 
-```
+```text
 dotfiles/
 ├── Makefile              # 主入口
 ├── install.sh            # Bootstrap 腳本
@@ -89,15 +89,18 @@ dotfiles/
 依照作業系統編輯對應的套件清單，一行一個套件名稱：
 
 **Linux:**
+
 - `packages/linux/apt.txt` - APT 套件
 - `packages/linux/snap.txt` - Snap 套件
 - `packages/linux/flatpak.txt` - Flatpak 套件
 
 **macOS:**
+
 - `packages/macos/brew.txt` - Homebrew 套件
 - `packages/macos/cask.txt` - Homebrew Cask 應用程式
 
 **Windows:**
+
 - `packages/windows/winget.txt` - winget 套件
 
 ### 新增 Shell Aliases
@@ -107,6 +110,7 @@ dotfiles/
 ### 機器專屬設定
 
 建立 `~/.bashrc.local` 或 `~/.zshrc.local`，用於存放：
+
 - 機器特定的環境變數或 PATH
 - API keys、tokens 等敏感資訊
 - 不想同步到 git 的個人設定
@@ -140,7 +144,7 @@ make ssh
 
 ### 設定完成後的結構
 
-```
+```text
 ~/.ssh/config          # SSH 多 host 設定
 ~/.gitconfig           # 包含 URL rewrite 和 includeIf
 ~/.gitconfig-work      # 工作帳號的 user.name/email
@@ -171,13 +175,15 @@ make ssh-server
 ```
 
 **功能：**
+
 - 安裝 `openssh-server`
 - 設定安全的 `sshd_config`
 - 啟用並啟動 SSH 服務
 
 **主要設定：**
+
 | 設定 | 預設值 | 說明 |
-|------|--------|------|
+| ---- | ------ | ---- |
 | Port | 22 | SSH 連線 port |
 | PermitRootLogin | no | 禁止 root 直接登入 |
 | PasswordAuthentication | yes | 允許密碼登入（可在互動時改為 no） |
@@ -192,19 +198,22 @@ make firewall
 ```
 
 **功能：**
+
 - 安裝 `ufw`
 - 設定預設規則（拒絕進入、允許外出）
 - 開放 SSH port
 - 啟用防火牆
 
 **預設規則：**
-```
+
+```text
 預設拒絕 incoming（外部連入）
 預設允許 outgoing（對外連線）
 允許 SSH（port 22）
 ```
 
 **互動選項：**
+
 - 可選擇開放 HTTP/HTTPS (80, 443)
 - 可選擇開放 RDP (3389) 供遠端桌面使用
 
