@@ -50,6 +50,14 @@ function Install-PwshConfig {
 }
 
 # ============================================================================
+# SSH Config
+# ============================================================================
+function Install-SshConfig {
+    Write-Step "Installing SSH configuration..."
+    & "$DotfilesDir\scripts\windows\setup-ssh.ps1"
+}
+
+# ============================================================================
 # Main
 # ============================================================================
 function Main {
@@ -62,6 +70,7 @@ function Main {
 
     Install-WingetPackages
     Install-PwshConfig
+    Install-SshConfig
 
     Write-Host ""
     Write-Host "======================================" -ForegroundColor Green

@@ -1,0 +1,49 @@
+# SSH Configuration
+# Managed by dotfiles — edit config/ssh/config in the dotfiles repo
+#
+# Key management: 1Password SSH Agent
+#   - Private keys stored in 1Password vault (never on disk)
+#   - IdentityFile points to .pub file as a hint to the agent
+#
+# Machine-specific entries (e.g. local servers): add to ~/.ssh/config.local
+Include ~/.ssh/config.local
+
+# ============================================================================
+# Global Defaults
+# ============================================================================
+Host *
+    IdentitiesOnly yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+
+# ============================================================================
+# GitHub — Personal Account
+# ============================================================================
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519.pub
+
+# ============================================================================
+# GitHub — Intelligentmemory
+# ============================================================================
+Host github-im
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_im.pub
+
+# ============================================================================
+# mistbytes GitLab (via Cloudflare Tunnel)
+# ============================================================================
+Host gitlab.mistbytes.com
+    ProxyCommand cloudflared access ssh --hostname ssh.mistbytes.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519.pub
+
+# ============================================================================
+# mistbytes SSH (via Cloudflare Tunnel)
+# ============================================================================
+Host ssh.mistbytes.com
+    ProxyCommand cloudflared access ssh --hostname %h
+    User alan
+    IdentityFile ~/.ssh/id_ed25519.pub
