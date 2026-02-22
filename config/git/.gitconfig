@@ -27,6 +27,9 @@
     unstage = reset HEAD --
     amend = commit --amend --no-edit
 
+[http]
+    postBuffer = 524288000
+
 [color]
     ui = auto
 

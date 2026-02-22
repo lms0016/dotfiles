@@ -50,6 +50,14 @@ function Install-PwshConfig {
 }
 
 # ============================================================================
+# Git Config
+# ============================================================================
+function Install-GitConfig {
+    Write-Step "Installing Git configuration..."
+    & "$DotfilesDir\scripts\windows\setup-git.ps1"
+}
+
+# ============================================================================
 # SSH Config
 # ============================================================================
 function Install-SshConfig {
@@ -70,6 +78,7 @@ function Main {
 
     Install-WingetPackages
     Install-PwshConfig
+    Install-GitConfig
     Install-SshConfig
 
     Write-Host ""
