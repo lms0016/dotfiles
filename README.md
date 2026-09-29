@@ -117,6 +117,11 @@ dotfiles/
 
 這些檔案不會被 git 追蹤。
 
+Windows（PowerShell）對應的是 profile 同目錄下的 `profile.local.ps1`
+（`Split-Path $PROFILE` 那個目錄），由 profile 最後載入。
+各機路徑不同的目錄捷徑（例如 `pj`、`af`）放這裡；
+範本見 `config/shell/powershell/profile.local.example.ps1`。
+
 ## SSH 多帳號設定
 
 支援 GitHub 多帳號自動切換（個人 + 工作帳號）。

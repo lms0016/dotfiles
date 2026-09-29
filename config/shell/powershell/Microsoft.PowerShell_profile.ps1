@@ -1,6 +1,8 @@
 using namespace System.Management.Automation
 using namespace System.Management.Automation.Language
 
+function c { claude @args }
+
 #f45873b3-b655-43a6-b217-97c00aa0db58 PowerToys CommandNotFound module
 Import-Module -Name Microsoft.WinGet.CommandNotFound
 #f45873b3-b655-43a6-b217-97c00aa0db58
@@ -272,3 +274,63 @@ function New-Password {
 
 Import-Module -Name Terminal-Icons
 oh-my-posh init pwsh --config "$HOME\Documents\PowerShell\alan.omp.yaml" | Invoke-Expression
+
+# --- Unix-like helpers ---
+
+# ll / la: detailed listing; la also shows hidden and system items
+function ll { Get-ChildItem @args }
+function la { Get-ChildItem -Force @args }
+
+# Show the full path of an executable or the definition of an alias/function
+function which {
+    param([Parameter(Mandatory)][string]$Name)
+    $cmd = Get-Command $Name -ErrorAction SilentlyContinue
+    if (-not $cmd) { Write-Warning "'$Name' not found"; return }
+    if ($cmd.Source) { $cmd.Source } else { $cmd.Definition }
+}
+
+# Create the file if missing, otherwise just bump its timestamp (never truncates)
+function touch {
+    param([Parameter(Mandatory, ValueFromRemainingArguments)][string[]]$Path)
+    foreach ($p in $Path) {
+        if (Test-Path -LiteralPath $p) {
+            (Get-Item -LiteralPath $p).LastWriteTime = Get-Date
+        } else {
+            New-Item -ItemType File -Path $p | Out-Null
+        }
+    }
+}
+
+# First / last N lines of a file (default 10), or of piped input
+function head {
+    param([string]$Path, [int]$n = 10)
+    if ($Path) { Get-Content -LiteralPath $Path -TotalCount $n }
+    else { $input | Select-Object -First $n }
+}
+function tail {
+    param([string]$Path, [int]$n = 10, [switch]$f)
+    if ($Path) { Get-Content -LiteralPath $Path -Tail $n -Wait:$f }
+    else { $input | Select-Object -Last $n }
+}
+
+# Create a directory and enter it
+function mkcd {
+    param([Parameter(Mandatory)][string]$Path)
+    New-Item -ItemType Directory -Path $Path -Force | Out-Null
+    Set-Location -LiteralPath $Path
+}
+
+# Open a file or folder with its default handler ('open .' opens Explorer here)
+function open { Invoke-Item @args }
+
+# Walk up the directory tree
+function .. { Set-Location .. }
+function ... { Set-Location ../.. }
+function .... { Set-Location ../../.. }
+
+# --- Local configuration (machine-specific, not in git) ---
+# Put per-host settings such as directory shortcuts in profile.local.ps1
+# next to this profile; see profile.local.example.ps1 in the dotfiles repo.
+$LocalProfile = Join-Path (Split-Path -Parent $PROFILE) 'profile.local.ps1'
+if (Test-Path -LiteralPath $LocalProfile) { . $LocalProfile }
+Remove-Variable LocalProfile
