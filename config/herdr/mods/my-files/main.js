@@ -2,12 +2,19 @@
 import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex, Editor, EditorState } from "gpui-base";
 import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, window } from "herdr";
+import { openTab } from "./open-tab.js";
+
+// A mod pane has no folder. Without this, focusing a viewer tab moves the tree
+// to the space's folder, which can be a different repository than the terminal's.
+const lastCwd = new Map();
 
 function location() {
   const space = spaces().find(s => s.active), f = focused();
   const pane = f?.pane ? panes().find(p => p.pane === f.pane) : null;
   const on = f?.pane === null ? (f.terminal?.includes("/") ? f.terminal.split("/")[0] : null) : space?.machine ?? null;
-  return { cwd: pane?.cwd || f?.cwd || space?.folder, on, space: space?.id };
+  const live = pane?.cwd || f?.cwd;
+  if (live && space) lastCwd.set(space.id, live);
+  return { cwd: live || lastCwd.get(space?.id) || space?.folder, on, space: space?.id };
 }
 const key = () => JSON.stringify(location());
 const LANG = { ts: "js", tsx: "js", mts: "js", cts: "js", jsx: "js", mjs: "js", toml: "yaml", jsonc: "json", svelte: "html", vue: "html" };
@@ -139,13 +146,18 @@ export default class Files extends View {
     });
   }
 
+  openFile(path) {
+    const file = `${this.root}/${path}`;
+    openTab(`file:${this.on ?? ""}:${file}`, { name: path.split("/").pop(), space: location().space, mod: "file-viewer", props: { file, on: this.on } });
+  }
+
   rows(prefix, depth, out, t) {
     if (out.length >= TOTAL || depth > 40) return out;
     for (const entry of this.entries.get(prefix) ?? []) {
       if (out.length >= TOTAL) break;
       const path = prefix ? `${prefix}/${entry.name}` : entry.name, open = this.folders.has(path), mark = this.marks[`${this.root}/${path}`];
       out.push(h_flex().id(`file-${path}`).h(28).flex_none().pl(8 + depth * 18).pr(8).gap(7).items_center().rounded(7).cursor_pointer().hover(s => s.bg(t.hover))
-        .on_click((_e, cx) => entry.dir ? this.toggle(path, cx) : this.show(path, cx))
+        .on_click((_e, cx) => entry.dir ? this.toggle(path, cx) : this.openFile(path))
         .child(entry.dir ? svg(`mods/my-files/chevron-${open ? "down" : "right"}.svg`).size(12).flex_none().text_color(t.dim) : div().w(12).flex_none())
         .child(svg(`mods/my-files/${entry.dir ? "folder" : "file"}.svg`).size(14).flex_none().text_color(t.muted))
         .child(div().flex_1().min_w(0).truncate().child(entry.name))

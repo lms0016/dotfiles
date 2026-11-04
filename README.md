@@ -69,12 +69,13 @@ dotfiles/
 │   ├── git/              # Git 設定
 │   ├── ssh/              # SSH 設定模板
 │   ├── vim/              # Vim 設定
-│   └── tmux/             # Tmux 設定
+│   ├── tmux/             # Tmux 設定
+│   └── herdr/            # Herdr Admin 啟動腳本、mods、layout
 ├── scripts/              # 安裝腳本
 │   ├── common/           # 跨平台腳本 (configs, uv, nvm, tmux, ai-agents, oh-my-zsh)
 │   ├── linux/            # Linux 專用 (packages, ssh-server, firewall)
 │   ├── macos/            # macOS 專用
-│   └── windows/          # Windows 專用 (setup-powershell.ps1)
+│   └── windows/          # Windows 專用 (setup-powershell.ps1, setup-herdr.ps1)
 ├── packages/             # 軟體清單
 │   ├── linux/            # Linux 套件 (apt, snap, flatpak)
 │   ├── macos/            # macOS 套件 (brew)
@@ -121,6 +122,33 @@ Windows（PowerShell）對應的是 profile 同目錄下的 `profile.local.ps1`
 （`Split-Path $PROFILE` 那個目錄），由 profile 最後載入。
 各機路徑不同的目錄捷徑（例如 `pj`、`af`）放這裡；
 範本見 `config/shell/powershell/profile.local.example.ps1`。
+
+## Herdr 客製化（Windows）
+
+`config/herdr/` 收錄 Herdr 桌面版的個人客製化，部署指令：
+
+```powershell
+pwsh -File scripts/windows/setup-herdr.ps1
+```
+
+| 路徑 | 內容 |
+| --- | --- |
+| `admin/start-admin.ps1` | 桌面捷徑「Herdr Admin」的啟動腳本：提權視窗，使用獨立的 core 與設定資料夾 |
+| `mods/file-viewer/` | 在視窗中間的 tab 閱讀檔案，Markdown 會排版 |
+| `mods/diff-viewer/` | 在視窗中間的 tab 看單一檔案的未提交變更 |
+| `mods/my-files/`、`mods/my-changes/` | 內建 Files、Changes 的複製版，點檔案會開到中間 |
+| `layouts/my-main.json` | 內建 `main` 的複製版，右側面板改用上面兩個 mod |
+
+- 預設部署到 `~/.config/herdr-admin`；要裝到一般版就加 `-AppHome $HOME\.config\herdr-app`。
+- 部署後按 `Ctrl+Shift+L` 切到 `my-main`。
+- 只會寫入上表的檔案，內容不同時先備份到 `~/.dotfiles_backup/herdr/`。
+- `settings.json`、`keys.json` 不在管理範圍內。
+
+### 跟上官方更新
+
+複製版不會跟著 Herdr 更新，各複製版的 `mod.json` 有記錄來源版本（`cloned_from`）。
+要合併官方修正時，用 `herdr-app do mod.clone` 產生新版副本，再對照
+`git log -- config/herdr/mods/my-files` 第一個 commit（未修改的原版）與目前版本的差異。
 
 ## SSH 多帳號設定
 

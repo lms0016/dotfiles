@@ -66,6 +66,14 @@ function Install-SshConfig {
 }
 
 # ============================================================================
+# Herdr Config
+# ============================================================================
+function Install-HerdrConfig {
+    Write-Step "Installing Herdr configuration..."
+    & "$DotfilesDir\scripts\windows\setup-herdr.ps1"
+}
+
+# ============================================================================
 # Main
 # ============================================================================
 function Main {
@@ -80,6 +88,7 @@ function Main {
     Install-PwshConfig
     Install-GitConfig
     Install-SshConfig
+    Install-HerdrConfig
 
     Write-Host ""
     Write-Host "======================================" -ForegroundColor Green
