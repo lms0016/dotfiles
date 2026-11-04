@@ -4,6 +4,7 @@
 import { View, div } from "gpui-kit";
 import { v_flex, h_flex, Editor, EditorState, TextView } from "gpui-base";
 import { props, readTextFile, theme, settings } from "herdr";
+import { focusWhenShown } from "./focus-on-show.js";
 
 const LANG = { ts: "js", tsx: "js", mts: "js", cts: "js", jsx: "js", mjs: "js", toml: "yaml", jsonc: "json", svelte: "html", vue: "html" };
 const MAX_CHARS = 400000;
@@ -11,6 +12,9 @@ const REFRESH_MS = 10000;
 
 export default class FileViewer extends View {
   init(_props, cx) {
+    // `mod:file-viewer` keys only apply while this mod holds the keyboard.
+    this.handle = cx.focus_handle();
+    focusWhenShown("file-viewer", this.handle, cx);
     // props() is null under `herdr-app check`, which loads the mod without a pane.
     this.file = props()?.file ?? null;
     this.on = props()?.on ?? null;
@@ -76,7 +80,7 @@ export default class FileViewer extends View {
       : this.code
         ? Editor.new(this.code).flex_1().min_h(0)
         : div().p(16).text_color(t.dim).child(this.error ?? "Loading file…");
-    return v_flex().id("file-viewer").size_full().min_h(0).bg(t.background).text_color(t.foreground).text_size(14)
+    return v_flex().id("file-viewer").size_full().min_h(0).bg(t.background).text_color(t.foreground).text_size(14).track_focus(this.handle)
       .child(h_flex().h(30).flex_none().px(14).items_center().border_b(1).border_color(t.border)
         .child(div().flex_1().min_w(0).truncate().text_size(12).text_color(t.dim).child(this.file ?? "")))
       .child(body);

@@ -5,6 +5,7 @@
 import { View, div, list } from "gpui-kit";
 import { v_flex, h_flex, Scrollbar } from "gpui-base";
 import { props, exec, readTextFile, theme, settings } from "herdr";
+import { focusWhenShown } from "./focus-on-show.js";
 
 // Reads write nothing under .git (no index refresh or lock, no fsmonitor cookie).
 const READ = ["--no-optional-locks", "-c", "core.fsmonitor=false", "-c", "diff.autoRefreshIndex=false"];
@@ -55,6 +56,9 @@ function diffRows(lines) {
 
 export default class DiffViewer extends View {
   init(_props, cx) {
+    // `mod:diff-viewer` keys only apply while this mod holds the keyboard.
+    this.handle = cx.focus_handle();
+    focusWhenShown("diff-viewer", this.handle, cx);
     // props() is null under `herdr-app check`, which loads the mod without a pane.
     const given = props();
     this.root = given?.root ?? null;
@@ -161,7 +165,7 @@ export default class DiffViewer extends View {
 
   render() {
     const t = theme(), listId = `viewer-diff-${this.generation}`;
-    return v_flex().id("diff-viewer").size_full().min_h(0).bg(t.background).text_color(t.foreground).text_size(13)
+    return v_flex().id("diff-viewer").size_full().min_h(0).bg(t.background).text_color(t.foreground).text_size(13).track_focus(this.handle)
       .child(h_flex().h(30).flex_none().px(14).items_center().border_b(1).border_color(t.border)
         .child(div().flex_1().min_w(0).truncate().text_size(12).text_color(t.dim).child(this.path ? `${this.root}/${this.path}${this.base ? `  (vs ${this.base})` : ""}` : "")))
       .when(Boolean(this.note), (e) => e.child(div().p(16).text_color(t.dim).child(this.note)))
