@@ -54,6 +54,7 @@ help:
 	@echo "  ai-agents    - Install AI CLI tools (Copilot, Codex, Gemini, Claude)"
 	@echo "  oh-my-zsh    - Install Oh My Zsh + Powerlevel10k"
 	@echo "  configs      - Install all configuration files"
+	@echo "  herdr        - Deploy Herdr mods and layout (macOS)"
 	@echo ""
 	@echo "Linux system setup (Ubuntu):"
 	@echo "  ssh-server   - Setup SSH server (openssh-server)"
@@ -67,7 +68,7 @@ help:
 # Main Installation Targets
 # ============================================================================
 .PHONY: install
-install: packages configs ssh-server firewall tmux uv nvm ai-agents oh-my-zsh ssh
+install: packages configs ssh-server firewall tmux uv nvm ai-agents oh-my-zsh ssh herdr
 	@echo ""
 	@echo "✓ Installation complete!"
 	@echo "  Please restart your shell or run: source ~/.bashrc (or ~/.zshrc)"
@@ -147,6 +148,14 @@ oh-my-zsh: packages
 .PHONY: configs
 configs:
 	@bash scripts/common/configs.sh --all
+
+.PHONY: herdr
+herdr:
+ifeq ($(OS_FAMILY_BASE),macos)
+	@bash scripts/macos/setup-herdr.sh
+else
+	@echo "herdr is only available on macOS (Windows: scripts/windows/setup-herdr.ps1)"
+endif
 
 # ============================================================================
 # Linux System Setup (Ubuntu)

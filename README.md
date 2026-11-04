@@ -39,6 +39,7 @@ pwsh -ExecutionPolicy Bypass -File install.ps1
 | ai-agents | AI CLI 工具 (Copilot, Codex, Gemini, Claude) |
 | oh-my-zsh | Oh My Zsh + Powerlevel10k |
 | ssh | SSH 多帳號設定（互動式） |
+| herdr | Herdr mods 與 layout（僅 macOS，沒裝 Herdr 就跳過） |
 | ssh-server | SSH 服務（僅 Linux） |
 | firewall | 防火牆（僅 Linux） |
 
@@ -74,7 +75,7 @@ dotfiles/
 ├── scripts/              # 安裝腳本
 │   ├── common/           # 跨平台腳本 (configs, uv, nvm, tmux, ai-agents, oh-my-zsh)
 │   ├── linux/            # Linux 專用 (packages, ssh-server, firewall)
-│   ├── macos/            # macOS 專用
+│   ├── macos/            # macOS 專用 (packages, setup-herdr)
 │   └── windows/          # Windows 專用 (setup-powershell.ps1, setup-herdr.ps1)
 ├── packages/             # 軟體清單
 │   ├── linux/            # Linux 套件 (apt, snap, flatpak)
@@ -123,24 +124,31 @@ Windows（PowerShell）對應的是 profile 同目錄下的 `profile.local.ps1`
 各機路徑不同的目錄捷徑（例如 `pj`、`af`）放這裡；
 範本見 `config/shell/powershell/profile.local.example.ps1`。
 
-## Herdr 客製化（Windows）
+## Herdr 客製化
 
 `config/herdr/` 收錄 Herdr 桌面版的個人客製化，部署指令：
 
 ```powershell
+# Windows
 pwsh -File scripts/windows/setup-herdr.ps1
+```
+
+```bash
+# macOS
+make herdr
 ```
 
 | 路徑 | 內容 |
 | --- | --- |
-| `admin/start-admin.ps1` | 桌面捷徑「Herdr Admin」的啟動腳本：提權視窗，使用獨立的 core 與設定資料夾 |
+| `admin/start-admin.ps1` | 僅 Windows。桌面捷徑「Herdr Admin」的啟動腳本：提權視窗，使用獨立的 core 與設定資料夾 |
 | `mods/file-viewer/` | 在視窗中間的 tab 閱讀檔案；Markdown 可切換排版預覽與原始碼，要框選複製請用原始碼 |
 | `mods/diff-viewer/` | 在視窗中間的 tab 左右對照單一檔案的未提交變更，或它相對 base 分支的變更，長行會換行 |
 | `mods/my-files/`、`mods/my-changes/` | 內建 Files、Changes 的複製版，點檔案會開到中間 |
 | `layouts/my-main.json` | 內建 `main` 的複製版，右側面板改用上面兩個 mod |
 
-- 預設部署到 `~/.config/herdr-admin`；要裝到一般版就加 `-AppHome $HOME\.config\herdr-app`。
-- 部署後按 `Ctrl+Shift+L` 切到 `my-main`。
+- Windows 預設部署到 `~/.config/herdr-admin`；要裝到一般版就加 `-AppHome $HOME\.config\herdr-app`。
+- macOS 部署到 `~/.config/herdr-app`，可用 `HERDR_APP_HOME` 改位置。
+- 部署後按 `Ctrl+Shift+L`（macOS 是 `Cmd+Shift+L`）切到 `my-main`。
 - 只會寫入上表的檔案，內容不同時先備份到 `~/.dotfiles_backup/herdr/`。
 - `settings.json`、`keys.json` 不在管理範圍內。
 
