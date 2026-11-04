@@ -134,7 +134,7 @@ pwsh -File scripts/windows/setup-herdr.ps1
 | 路徑 | 內容 |
 | --- | --- |
 | `admin/start-admin.ps1` | 桌面捷徑「Herdr Admin」的啟動腳本：提權視窗，使用獨立的 core 與設定資料夾 |
-| `mods/file-viewer/` | 在視窗中間的 tab 閱讀檔案，Markdown 會排版 |
+| `mods/file-viewer/` | 在視窗中間的 tab 閱讀檔案；Markdown 可切換排版預覽與原始碼，要框選複製請用原始碼 |
 | `mods/diff-viewer/` | 在視窗中間的 tab 左右對照單一檔案的未提交變更，或它相對 base 分支的變更，長行會換行 |
 | `mods/my-files/`、`mods/my-changes/` | 內建 Files、Changes 的複製版，點檔案會開到中間 |
 | `layouts/my-main.json` | 內建 `main` 的複製版，右側面板改用上面兩個 mod |

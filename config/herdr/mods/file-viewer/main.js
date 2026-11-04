@@ -59,10 +59,11 @@ export default class FileViewer extends View {
   present(text) {
     const ext = this.file.includes(".") ? this.file.split(".").pop().toLowerCase() : "txt";
     const value = text.length > MAX_CHARS ? text.slice(0, MAX_CHARS) + "\n… (file truncated)" : text;
-    if (ext === "md" || ext === "markdown") { this.markdown = value; return; }
+    const isMarkdown = ext === "md" || ext === "markdown";
+    if (isMarkdown) this.markdown = value;
     const t = theme();
     this.code = EditorState.new({
-      language: LANG[ext] ?? ext, readonly: true, value,
+      language: isMarkdown ? "markdown" : LANG[ext] ?? ext, readonly: true, value,
       font_family: settings().font_family,
       syntax: { keyword: t.ansi5, string: t.ansi2, comment: t.dim, function: t.ansi4, type: t.ansi3, number: t.ansi1, constant: t.ansi6 },
     });
@@ -74,15 +75,21 @@ export default class FileViewer extends View {
 
   render() {
     const t = theme();
-    const body = this.markdown !== null && this.markdown !== undefined
+    const hasMarkdown = this.markdown !== null && this.markdown !== undefined;
+    // TextView selection hid the selected text, so the preview is not selectable; selecting
+    // and copying happen in the source view, which also copies the markdown as written.
+    const body = hasMarkdown && !this.source
       ? div().id("viewer-scroll").flex_1().min_h(0).overflow_y_scrollbar().px(24).py(16)
-          .child(TextView.markdown("viewer-markdown", this.markdown).selectable(true))
+          .child(TextView.markdown("viewer-markdown", this.markdown))
       : this.code
         ? Editor.new(this.code).flex_1().min_h(0)
         : div().p(16).text_color(t.dim).child(this.error ?? "Loading file…");
     return v_flex().id("file-viewer").size_full().min_h(0).bg(t.background).text_color(t.foreground).text_size(14).track_focus(this.handle)
-      .child(h_flex().h(30).flex_none().px(14).items_center().border_b(1).border_color(t.border)
-        .child(div().flex_1().min_w(0).truncate().text_size(12).text_color(t.dim).child(this.file ?? "")))
+      .child(h_flex().h(30).flex_none().px(14).gap(8).items_center().border_b(1).border_color(t.border)
+        .child(div().flex_1().min_w(0).truncate().text_size(12).text_color(t.dim).child(this.file ?? ""))
+        .when(hasMarkdown, (e) => e.child(div().id("toggle-source").flex_none().px(8).py(2).rounded(6).text_size(12).text_color(t.muted).cursor_pointer().hover((s) => s.bg(t.hover))
+          .on_click((_e, cx) => { this.source = !this.source; cx.notify(); })
+          .child(this.source ? "Preview" : "Source"))))
       .child(body);
   }
 }
