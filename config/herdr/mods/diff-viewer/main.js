@@ -1,8 +1,9 @@
 // Shows one file's uncommitted changes as a tab in the center of the window.
 // The diff logic follows the shipped `changes` mod (0.1.12).
-// Props: { root: repository top level, path: relative to root, on: machine or null }
-import { View, div } from "gpui-kit";
-import { v_flex, h_flex, Scrollbar, v_virtual_list } from "gpui-base";
+// Props: { root: repository top level, path: relative to root, on: machine or null,
+//          base: optional ref; when set, shows base...HEAD instead of uncommitted changes }
+import { View, div, list } from "gpui-kit";
+import { v_flex, h_flex, Scrollbar } from "gpui-base";
 import { props, exec, readTextFile, theme, settings } from "herdr";
 
 // Reads write nothing under .git (no index refresh or lock, no fsmonitor cookie).
@@ -16,18 +17,40 @@ const ROW_HEIGHT = 20;
 const DARK_ROW = { "+": "#022800", "-": "#3d0100" };
 const LIGHT_ROW_ALPHA = "48";
 
-// Numbers each diff line once, so a frame only draws the rows on screen.
+// Turns a unified diff into side-by-side rows: each run of removed lines is paired with
+// the added lines that follow it, and the shorter side gets empty cells.
 function diffRows(lines) {
-  let old = 0, next = 0;
-  return lines.map((line) => {
+  const rows = [];
+  let old = 0, next = 0, removed = [], added = [], last = [];
+  const flush = () => {
+    for (let i = 0; i < Math.max(removed.length, added.length); i++) rows.push({ left: removed[i] ?? null, right: added[i] ?? null });
+    removed = []; added = [];
+  };
+  for (const line of lines) {
     const match = /^@@ -(\d+)(?:,\d+)? \+(\d+)/.exec(line);
-    if (match) { old = +match[1]; next = +match[2]; return { kind: "@", text: line }; }
-    const kind = line[0];
-    if (kind === "-") return { kind, number: old++, text: line.slice(1) || " " };
-    if (kind === "+") return { kind, number: next++, text: line.slice(1) || " " };
-    if (kind === " ") { old++; return { kind, number: next++, text: line.slice(1) || " " }; }
-    return { kind: "", text: line };
-  });
+    const kind = line[0], text = line.slice(1) || " ";
+    if (match) {
+      flush(); old = +match[1]; next = +match[2];
+      rows.push({ header: line });
+    } else if (kind === "-") {
+      last = [{ kind, number: old++, text }]; removed.push(last[0]);
+    } else if (kind === "+") {
+      last = [{ kind, number: next++, text }]; added.push(last[0]);
+    } else if (kind === " ") {
+      flush();
+      last = [{ kind, number: old++, text }, { kind, number: next++, text }];
+      rows.push({ left: last[0], right: last[1] });
+    } else if (kind === "\\") {
+      // "\ No newline at end of file" describes the line before it. Keeping it as its own
+      // row would split a removed line from the added line it pairs with.
+      for (const cell of last) cell.text += "  (no newline at end of file)";
+    } else {
+      flush();
+      rows.push({ header: line });
+    }
+  }
+  flush();
+  return rows;
 }
 
 export default class DiffViewer extends View {
@@ -37,8 +60,9 @@ export default class DiffViewer extends View {
     this.root = given?.root ?? null;
     this.path = given?.path ?? null;
     this.on = given?.on ?? null;
+    this.base = given?.base ?? null;
     this.rows = [];
-    this.width = 300;
+    this.generation = 0;
     if (!this.root || !this.path) { this.note = "No diff given"; return; }
     this.refresh(cx);
     cx.timer.every(REFRESH_MS, (cx) => this.refresh(cx));
@@ -48,7 +72,22 @@ export default class DiffViewer extends View {
     return exec("git", [...READ, ...args], { cwd: this.root, on: this.on });
   }
 
+  async readBranchLines() {
+    const diff = await this.git(["diff", `${this.base}...HEAD`, "--no-ext-diff", "--no-textconv", "--no-color", "--", this.path]);
+    if (diff.code !== 0) throw new Error(diff.stderr);
+    if (!diff.stdout.trim()) return { message: `No changes in this file vs ${this.base}` };
+    return this.parseDiff(diff.stdout);
+  }
+
+  parseDiff(stdout) {
+    const all = stdout.replace(/\n$/, "").split("\n");
+    const first = all.findIndex((line) => line.startsWith("@@"));
+    if (first < 0) return { message: all.some((line) => line.startsWith("Binary files")) ? "Binary file changed" : "No text diff available" };
+    return { lines: all.slice(first) };
+  }
+
   async readLines() {
+    if (this.base) return this.readBranchLines();
     const status = await this.git(["status", "--porcelain=v1", "-z", "--no-renames", "--untracked-files=all", "--", this.path]);
     if (status.code !== 0) throw new Error(status.stderr);
     const xy = status.stdout.slice(0, 2);
@@ -63,10 +102,7 @@ export default class DiffViewer extends View {
     }
     const diff = await this.git(["diff", ...(head.code === 0 ? ["HEAD"] : []), "--no-ext-diff", "--no-textconv", "--no-color", "--", this.path]);
     if (diff.code !== 0) throw new Error(diff.stderr);
-    const all = diff.stdout.replace(/\n$/, "").split("\n");
-    const first = all.findIndex((line) => line.startsWith("@@"));
-    if (first < 0) return { message: all.some((line) => line.startsWith("Binary files")) ? "Binary file changed" : "No text diff available" };
-    return { lines: all.slice(first) };
+    return this.parseDiff(diff.stdout);
   }
 
   refresh(cx) {
@@ -99,29 +135,38 @@ export default class DiffViewer extends View {
     const shown = lines.slice(0, MAX_LINES).map((line) => line.length > MAX_LINE_CHARS ? line.slice(0, MAX_LINE_CHARS) + "… (line truncated)" : line);
     if (lines.length > MAX_LINES) shown.push(`… (diff truncated at ${MAX_LINES} lines)`);
     this.rows = diffRows(shown);
-    this.width = Math.max(300, ...shown.map((line) => line.length * 8 + 60));
+    // A list keeps its scroll position and measured heights by id, and one that grows from
+    // empty opens at the bottom. A new id per diff starts it at the top with the right heights.
+    this.generation++;
   }
 
-  row({ kind, number, text }, t) {
-    if (kind === "@") return div().w_full().px(12).h(ROW_HEIGHT).flex_none().truncate().bg(t.raised).text_color(t.dim).child(text);
-    const tint = kind === "+" ? t.ansi2 : kind === "-" ? t.ansi1 : null;
-    return h_flex().w_full().h(ROW_HEIGHT).flex_none().gap(10)
-      .when(Boolean(tint), (e) => e.bg(settings().dark ? DARK_ROW[kind] : tint + LIGHT_ROW_ALPHA))
-      .child(div().w(44).flex_none().text_right().text_color(tint ?? t.dim).child(number === undefined ? "" : String(number)))
-      .child(div().w(10).flex_none().font_semibold().text_color(tint ?? t.dim).child(tint ? kind : ""))
-      .child(div().flex_1().min_w(0).truncate().child(text));
+  cell(cell, t) {
+    const base = div().flex_1().min_w(0).min_h(ROW_HEIGHT);
+    if (!cell) return base.bg(t.raised);
+    const tint = cell.kind === "+" ? t.ansi2 : cell.kind === "-" ? t.ansi1 : null;
+    return base.flex().flex_row().gap(10)
+      .when(Boolean(tint), (e) => e.bg(settings().dark ? DARK_ROW[cell.kind] : tint + LIGHT_ROW_ALPHA))
+      .child(div().w(44).flex_none().text_right().text_color(tint ?? t.dim).child(String(cell.number)))
+      .child(div().w(10).flex_none().font_semibold().text_color(tint ?? t.dim).child(tint ? cell.kind : ""))
+      .child(div().flex_1().min_w(0).pr(8).child(cell.text));
+  }
+
+  row({ header, left, right }, t) {
+    if (header !== undefined) return div().w_full().px(12).h(ROW_HEIGHT).truncate().bg(t.raised).text_color(t.dim).child(header);
+    return h_flex().w_full().items_stretch()
+      .child(this.cell(left, t))
+      .child(div().w(1).flex_none().bg(t.border))
+      .child(this.cell(right, t));
   }
 
   render() {
-    const t = theme();
+    const t = theme(), listId = `viewer-diff-${this.generation}`;
     return v_flex().id("diff-viewer").size_full().min_h(0).bg(t.background).text_color(t.foreground).text_size(13)
       .child(h_flex().h(30).flex_none().px(14).items_center().border_b(1).border_color(t.border)
-        .child(div().flex_1().min_w(0).truncate().text_size(12).text_color(t.dim).child(this.path ? `${this.root}/${this.path}` : "")))
+        .child(div().flex_1().min_w(0).truncate().text_size(12).text_color(t.dim).child(this.path ? `${this.root}/${this.path}${this.base ? `  (vs ${this.base})` : ""}` : "")))
       .when(Boolean(this.note), (e) => e.child(div().p(16).text_color(t.dim).child(this.note)))
       .child(div().flex_1().min_h(0).relative().font_family(settings().font_family ?? "JetBrains Mono")
-        .child(div().id("viewer-diff-x").size_full().overflow_x_scrollbar()
-          .child(div().w_full().min_w(this.width).h_full().child(v_virtual_list("viewer-diff", this.rows.length, ROW_HEIGHT, (i) => String(i),
-            (range) => this.rows.slice(range.start, range.end).map((row) => this.row(row, t))).size_full())))
-        .child(Scrollbar.vertical("viewer-diff").viewport_from_layout().absolute().inset_0()));
+        .child(list(listId, this.rows.length, (i) => String(i), (i) => this.row(this.rows[i], t)).size_full())
+        .child(Scrollbar.vertical(listId).absolute().inset_0()));
   }
 }

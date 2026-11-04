@@ -135,8 +135,12 @@ pwsh -File scripts/windows/setup-herdr.ps1
 | --- | --- |
 | `admin/start-admin.ps1` | 桌面捷徑「Herdr Admin」的啟動腳本：提權視窗，使用獨立的 core 與設定資料夾 |
 | `mods/file-viewer/` | 在視窗中間的 tab 閱讀檔案，Markdown 會排版 |
-| `mods/diff-viewer/` | 在視窗中間的 tab 看單一檔案的未提交變更 |
-| `mods/my-files/`、`mods/my-changes/` | 內建 Files、Changes 的複製版，點檔案會開到中間 |
+| `mods/diff-viewer/` | 在視窗中間的 tab 左右對照單一檔案的未提交變更，或它相對 base 分支的變更，長行會換行 |
+| `mods/my-files/`、`mods/my-changes/` | 內建 Files、Changes 的複製版，點檔案會開到中間；Changes 多了 Uncommitted／Branch 切換 |
+
+Changes 的 Branch 模式比對 `<base>...HEAD`（從分叉點到 HEAD，與 GitHub PR 顯示的範圍相同），不含未提交的變更。
+base 取下列第一個存在、且不是目前分支的 ref：`origin/develop`、`develop`、`origin/main`、`main`、`origin/master`、`master`。
+不會自動 `git fetch`，遠端追蹤分支舊了結果也會是舊的。
 | `layouts/my-main.json` | 內建 `main` 的複製版，右側面板改用上面兩個 mod |
 
 - 預設部署到 `~/.config/herdr-admin`；要裝到一般版就加 `-AppHome $HOME\.config\herdr-app`。
