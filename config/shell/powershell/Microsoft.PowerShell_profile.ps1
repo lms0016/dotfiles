@@ -4,7 +4,15 @@ using namespace System.Management.Automation.Language
 function c { claude @args }
 
 #f45873b3-b655-43a6-b217-97c00aa0db58 PowerToys CommandNotFound module
-Import-Module -Name Microsoft.WinGet.CommandNotFound
+# Skipped when elevated: in an elevated pwsh this module keeps the process
+# alive after a -Command script finishes, so tools that probe through the
+# shell (e.g. herdr's installed-agent check) wait forever.
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
+    [Security.Principal.WindowsBuiltInRole]::Administrator)
+if (-not $isAdmin) {
+    Import-Module -Name Microsoft.WinGet.CommandNotFound
+}
+Remove-Variable isAdmin
 #f45873b3-b655-43a6-b217-97c00aa0db58
 
 if ($host.Name -eq 'ConsoleHost')
